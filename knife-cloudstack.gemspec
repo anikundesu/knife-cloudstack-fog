@@ -8,8 +8,8 @@ Gem::Specification.new do |s|
   s.platform    = Gem::Platform::RUBY
   s.has_rdoc = true
   s.extra_rdoc_files = ["README.rdoc", "LICENSE" ]
-  s.authors     = ["Chirag Jog"]
-  s.email       = ["chirag@clogeny.com"]
+  s.authors     = ["Chirag Jog", "Jeff Moody"]
+  s.email       = ["chirag@clogeny.com", "jmoody@datapipe.com"]
   s.homepage    = "https://github.com/chiragjog/knife-cloudstack"
   s.summary     = %q{Cloudstack Compute Support for Chef's Knife Command}
   s.description = s.summary
@@ -19,5 +19,5 @@ Gem::Specification.new do |s|
   s.executables   = `git ls-files -- bin/*`.split("\n").map{ |f| File.basename(f) }
   s.require_paths = ["lib"]
 
-  s.add_dependency "fog", "~> 1.0.0"
+  s.add_dependency "fog", "~> 1.1.2"
 end

@@ -27,14 +27,14 @@ class Chef
 
       include Knife::CloudstackBase
 
-      banner "knife cloudstack server list (options)"
+      banner "knife cloudstack vm list (options)"
 
       def run
         $stdout.sync = true
 
         validate!
 
-        server_list = [
+        vm_list = [
           ui.color('Instance ID', :bold),
           ui.color('Display Name', :bold),
           ui.color('Private IP Address', :bold),
@@ -42,27 +42,27 @@ class Chef
           ui.color('Password', :bold),
           ui.color('Flavor', :bold),
           ui.color('Image', :bold),
-	  ui.color('Service Offering', :bold),
+	        ui.color('Service Offering', :bold),
           ui.color('State', :bold)
         ]
-        connection.servers.all.each do |server|
+        connection.list_virtual_machines.each do |vm|
 	  public_ip = ""
-          server_list << server.id.to_s
-          server_list << server.displayname.to_s
-          server_list << server.ipaddress.to_s
+          vm_list << server.id.to_s
+          vm_list << server.displayname.to_s
+          vm_list << server.ipaddress.to_s
           connection.addresses.all.each do |ipaddress|
             if ipaddress.virtualmachineid == server.id
 		public_ip = ipaddress.ipaddress
 		break
 	    end
 	  end
-          server_list << public_ip.to_s
-          server_list << server.password.to_s
-          server_list << server.flavor_id.to_s
-          server_list << server.templatedisplaytext.to_s
-          server_list << server.serviceofferingname.to_s
-          #server_list << server.key_name.to_s
-          server_list << begin
+          vm_list << public_ip.to_s
+          vm_list << server.password.to_s
+          vm_list << server.flavor_id.to_s
+          vm_list << server.templatedisplaytext.to_s
+          vm_list << server.serviceofferingname.to_s
+          #vm_list << server.key_name.to_s
+          vm_list << begin
             state = server.state.to_s.downcase
             case state
             when 'shutting-down','terminated','stopping','stopped'
@@ -74,7 +74,7 @@ class Chef
             end
           end
         end
-        puts ui.list(server_list, :columns_across, 8)
+        puts ui.list(vm_list, :columns_across, 8)
 
       end
     end
