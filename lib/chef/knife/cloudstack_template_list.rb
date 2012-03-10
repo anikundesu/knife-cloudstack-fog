@@ -43,8 +43,8 @@ class Chef
         ]
         
         filter = config['filter']
-        puts filter
-        response = connection.list_templates['listtemplatesresponse', filter]
+
+        response = connection.list_templates('templatefilter' => filter)
         puts response
         
         if templates = response['templates']
