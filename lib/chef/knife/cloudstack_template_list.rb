@@ -47,9 +47,7 @@ class Chef
         ]
         
         filter = config['filter']
-        puts filter
         settings = connection.list_templates('templatefilter' => 'featured')
-
         if response = settings['listtemplatesresponse']
           response.each do |templates|
             if templates = response['template']

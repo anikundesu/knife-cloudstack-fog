@@ -20,11 +20,15 @@ require 'chef/knife/cloudstack_base'
 
 class Chef
   class Knife
-    class CloudstackSecurityGroupList < Knife
+    class CloudstackSecuritygroupList < Knife
 
       include Knife::CloudstackBase
 
       banner "knife cloudstack securitygroup list (options)"
+      option :rules,
+             :short => "-D GroupID",
+             :long => "--rules GroupID",
+             :description => "List the rules contained within a Security Group",
             
       def run
         $stdout.sync = true
@@ -34,43 +38,37 @@ class Chef
         securitygroup_list = [
           ui.color('ID', :bold),
           ui.color('Name', :bold),
-          ui.color('Size (in GB)', :bold),
-          ui.color('Type', :bold),
-          ui.color('Virtual Machine', :bold),
-          ui.color('State', :bold)
+          ui.color('Description', :bold)
+#          ui.color('Rules', :bold)
         ]
-        response = connection.list_securitygroups['listsecuritygroupsresponse']
-        puts response
-        
-        if securitygroups = response['securitygroup']
-          securitygroups.each do |securitygroup|
-            securitygroup_list << securitygroup['id'].to_s
-            securitygroup_list << securitygroup['name'].to_s
-            securitygroup_size = securitygroup['size']
-            securitygroup_size = (securitygroup_size/1024/1024/1024)
-            securitygroup_list << securitygroup_size.to_s
-            securitygroup_list << securitygroup['type']
-            if (securitygroup['vmdisplayname'].nil?)
-              puts "NULL VM"
-              securitygroup_list << ' '
-            else
-              securitygroup_list << securitygroup['vmdisplayname']
-            end
-            
-            securitygroup_list << begin
-              state = securitygroup['state'].to_s.downcase
-              case state
-                when 'allocated'
-                  ui.color(state, :red)
-                when 'pending'
-                  ui.color(state, :yellow)
-                else
-                  ui.color(state, :green)
-              end
+        response = connection.list_security_groups['listsecuritygroupsresponse']
+          if securitygroups = response['securitygroup']
+            securitygroups.each do |securitygroup|
+              securitygroup_list << securitygroup['id'].to_s
+              securitygroup_list << securitygroup['name'].to_s
+              securitygroup_list << securitygroup['description'].to_s
+#              rule_list = []
+#              if securitygroup['ingressrule'].nil?
+#                rule_list << ' '
+#              else
+#                securitygroup['ingressrule'].each do |ingressrule|
+#                  rule_details = []
+#                  rule_details << ingressrule['protocol'].to_s
+#                  rule_details << ingressrule['startport'].to_s
+#                  rule_details << ingressrule['endport'].to_s
+#                  if ingressrule['cidr'].nil?
+#                    rule_details << ingressrule['securitygroupname'].to_s
+#                    rule_details << ingressrule['account'].to_s
+#                  else
+#                    rule_details << ingressrule['cidr'].to_s
+#                  end
+#                  rule_list << rule_details.join(", ")
+#                end
+#              end
+#              securitygroup_list << rule_list.join("\n\t")
             end
           end
-          puts ui.list(securitygroup_list, :columns_across, 6)
-        end
+        puts ui.list(securitygroup_list, :columns_across, 3)
 
       end
         
