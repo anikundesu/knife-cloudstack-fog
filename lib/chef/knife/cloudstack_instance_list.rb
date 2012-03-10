@@ -2,6 +2,10 @@
 # Copyright:: Copyright (c) 2011 Clogeny Technologies.
 # License:: Apache License, Version 2.0
 #
+# Author:: Jeff Moody (<jmoody@datapipe.com>)
+# Copyright:: Copyright (c) 2012 Datapipe
+# License:: Apache License, Version 2.0
+#
 # Author:: Seth Chisamore (<schisamo@opscode.com>)
 # Copyright:: Copyright (c) 2011 Opscode, Inc.
 # License:: Apache License, Version 2.0
@@ -23,7 +27,7 @@ require 'chef/knife/cloudstack_base'
 
 class Chef
   class Knife
-    class CloudstackServerList < Knife
+    class CloudstackInstanceList < Knife
 
       include Knife::CloudstackBase
 
@@ -37,49 +41,52 @@ class Chef
         instance_list = [
           ui.color('Instance ID', :bold),
           ui.color('Display Name', :bold),
-          ui.color('Private IP Address', :bold),
-          ui.color('Public IP Address', :bold),
-          ui.color('Password', :bold),
-          ui.color('Flavor', :bold),
-          ui.color('Image', :bold),
-	        ui.color('Service Offering', :bold),
+          ui.color('IP Address', :bold),
+          ui.color('Security Group', :bold),
+          ui.color('Instance Zone', :bold),
+          ui.color('Service Offering', :bold),
+          ui.color('Template', :bold),
           ui.color('State', :bold)
         ]
-        puts connection.list_virtual_machines
-        connection.list_virtual_machines.each do |instance|
-	  public_ip = ""
-          instance_list << instance.id.to_s
-          instance_list << instance.displayname.to_s
-          instance_list << instance.ipaddress.to_s
-          connection.addresses.all.each do |ipaddress|
-            if ipaddress.virtualmachineid == instance.id
-		public_ip = ipaddress.ipaddress
-		break
-	    end
-	  end
-          instance_list << public_ip.to_s
-          instance_list << instance.password.to_s
-          instance_list << instance.flavor_id.to_s
-          instance_list << instance.templatedisplaytext.to_s
-          instance_list << instance.serviceofferingname.to_s
-          #instance_list << instance.key_name.to_s
-          instance_list << begin
-            state = instance.state.to_s.downcase
-            case state
-            when 'shutting-down','terminated','stopping','stopped'
-              ui.color(state, :red)
-            when 'pending'
-              ui.color(state, :yellow)
-            else
-              ui.color(state, :green)
-            end
+        
+        response = connection.list_virtual_machines['listvirtualmachinesresponse']
+        if virtual_machines = response['virtualmachine']
+          virtual_machines.each do |instance|
+              instance_list << instance['name'].to_s
+              instance_list << instance['displayname'].to_s
+              ip_list = []
+              instance['nic'].each do |nic|
+                ip_list << nic['ipaddress'].to_s
+              end
+              instance_list << ip_list.join(", ")
+              sg_list = []
+              instance['securitygroup'].each do |group|
+                sg_list << group['name'].to_s
+              end
+              instance_list << sg_list.join(", ")
+              
+              instance_list << instance['zonename'].to_s
+              instance_list << instance['serviceofferingname'].to_s
+              instance_list << instance['templatedisplaytext'].to_s
+              #instance_list << instance['state'].to_s
+              
+              instance_list << begin
+                state = instance['state'].to_s.downcase
+                case state
+                  when 'shutting-down','terminated','stopping','stopped'
+                    ui.color(state, :red)
+                  when 'pending'
+                    ui.color(state, :yellow)
+                  else
+                    ui.color(state, :green)
+                end
+              end
+              
           end
+          
+          puts ui.list(instance_list, :columns_across, 8)
         end
-        puts ui.list(instance_list, :columns_across, 8)
-
       end
     end
   end
 end
-
-

@@ -19,11 +19,11 @@ require 'chef/knife/cloudstack_base'
 
 class Chef
   class Knife
-    class CloudstackImageList < Knife
+    class CloudstackTemplateList < Knife
 
       include Knife::CloudstackBase
 
-      banner "knife cloudstack image list (options)"
+      banner "knife cloudstack template list (options)"
 
       def run
 
@@ -37,21 +37,17 @@ class Chef
           ui.color('Location', :bold),
         ]
 
-        connection.images.sort_by do |image|
-          [image.name, image.id].compact
-        end.each do |image|
-          image_list << image.id
-          image_list << image.name
-          image_list << image.size
-          image_list << image.ostypename
-          image_list << image.zonename
-        end
-
-        image_list = image_list.map do |item|
+        response = connection.list_templates['listtemplatesresponse']
+        if templates = response['templates']
+          templates.each do |template|
+            puts template
+          end
+          
+        template_list = image_list.map do |item|
           item.to_s
         end
 
-        puts ui.list(image_list, :columns_across, 6)
+        puts ui.list(template_list, :columns_across, 6)
       end
     end
   end

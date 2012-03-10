@@ -31,7 +31,7 @@ class Chef
         validate!
 
         flavor_list = [
-          ui.color('ID', :bold),
+          ui.color('ID', :red),
           ui.color('Name', :bold),
           ui.color('RAM', :bold),
           ui.color('Disk', :bold),
@@ -45,6 +45,17 @@ class Chef
           flavor_list << "#{flavor.storagetype.to_s} GB"
           flavor_list << flavor.cpuspeed.to_s
           flavor_list << flavor.cpunumber.to_s
+        end
+        instance_list << begin
+          state = instance.state.to_s.downcase
+          case state
+          when 'shutting-down','terminated','stopping','stopped'
+            ui.color(state, :red)
+          when 'pending'
+            ui.color(state, :yellow)
+          else
+            ui.color(state, :green)
+          end
         end
         puts ui.list(flavor_list, :columns_across, 6)
       end
