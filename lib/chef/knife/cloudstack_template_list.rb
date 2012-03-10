@@ -2,6 +2,10 @@
 # Copyright:: Copyright (c) 2011 Clogeny Technologies.
 # License:: Apache License, Version 2.0
 #
+# Author:: Jeff Moody (<jmoody@datapipe.com>)
+# Copyright:: Copyright (c) 2012 Datapipe
+# License:: Apache License, Version 2.0
+#
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
@@ -34,30 +38,36 @@ class Chef
 
         validate!
 
-        image_list = [
+        template_list = [
           ui.color('ID', :bold),
-          ui.color('Name', :bold),
-          ui.color('Size', :bold),
-          ui.color('OS Type', :bold),
-          ui.color('Location', :bold),
+          ui.color('Hypervisor', :bold),
+          ui.color('Size (in GB)', :bold),
+          ui.color('Zone Location', :bold),
+          ui.color('Name', :bold)          
         ]
         
         filter = config['filter']
+        puts filter
+        settings = connection.list_templates('templatefilter' => 'featured')
 
-        response = connection.list_templates('templatefilter' => filter)
-        puts response
-        
-        if templates = response['templates']
-          templates.each do |template|
-            puts template
+        if response = settings['listtemplatesresponse']
+          response.each do |templates|
+            if templates = response['template']
+              templates.each do |template|
+                template_list << template['id'].to_s
+                template_list << template['hypervisor']
+
+                template_size = template['size']
+                template_size = (template_size/1024/1024/1024)
+                template_list << template_size.to_s
+
+                template_list << template['zonename']
+                template_list << template['name']                
+              end
+            end
           end
-          
-        template_list = image_list.map do |item|
-          item.to_s
+          puts ui.list(template_list, :columns_across, 5)
         end
-        end
-
-        puts ui.list(template_list, :columns_across, 6)
       end
     end
   end

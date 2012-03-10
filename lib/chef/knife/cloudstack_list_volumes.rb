@@ -47,8 +47,6 @@ class Chef
             volume_list << volume['name'].to_s
             volume_size = volume['size']
             volume_size = (volume_size/1024/1024/1024)
-#            volume_size_s = volume_size.to_s
-#            volume_size_s << " GB"
             volume_list << volume_size.to_s
             volume_list << volume['type']
             if (volume['vmdisplayname'].nil?)
