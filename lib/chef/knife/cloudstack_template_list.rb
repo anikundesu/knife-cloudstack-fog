@@ -24,6 +24,11 @@ class Chef
       include Knife::CloudstackBase
 
       banner "knife cloudstack template list (options)"
+      option :filter,
+             :short => "-L FILTER",
+             :long => "--filter FILTER",
+             :description => "The template search filter. Default is 'featured'",
+             :default => "featured"
 
       def run
 
@@ -36,8 +41,12 @@ class Chef
           ui.color('OS Type', :bold),
           ui.color('Location', :bold),
         ]
-
-        response = connection.list_templates['listtemplatesresponse']
+        
+        filter = config['filter']
+        puts filter
+        response = connection.list_templates['listtemplatesresponse', filter]
+        puts response
+        
         if templates = response['templates']
           templates.each do |template|
             puts template
@@ -45,6 +54,7 @@ class Chef
           
         template_list = image_list.map do |item|
           item.to_s
+        end
         end
 
         puts ui.list(template_list, :columns_across, 6)
