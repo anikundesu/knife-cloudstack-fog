@@ -34,19 +34,24 @@ class Chef
         zone_list = [
           ui.color('ID', :bold),
           ui.color('Name', :bold),
-          ui.color('Description', :bold),
-          ui.color('Disk Size (in GB)', :bold)
+          ui.color('Network Type', :bold),
+          ui.color('Security Groups?', :bold)
         ]
         response = connection.list_zones['listzonesresponse']
-        puts response
           if zones = response['zone']
             zones.each do |zone|
               zone_list << zone['id'].to_s
               zone_list << zone['name'].to_s
-              zone_list << zone['displaytext'].to_s
-              disk_size = zone['disksize']
-              zone_list << disk_size.to_s
-
+              zone_list << zone['networktype'].to_s
+              zone_list << begin
+                state = zone['securitygroupsenabled'].to_s.downcase
+                case state
+                  when 'false'
+                    ui.color('No', :red)
+                  else
+                    ui.color('Yes', :green)
+                end
+              end
             end
           end
         puts ui.list(zone_list, :columns_across, 4)
