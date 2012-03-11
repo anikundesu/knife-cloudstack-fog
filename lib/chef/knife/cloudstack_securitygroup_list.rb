@@ -42,9 +42,7 @@ class Chef
 #          ui.color('Rules', :bold)
         ]
         response = connection.list_security_groups['listsecuritygroupsresponse']
-        puts response
           if securitygroups = response['securitygroup']
-            puts securitygroups
             securitygroups.each do |securitygroup|
               securitygroup_list << securitygroup['id'].to_s
               securitygroup_list << securitygroup['name'].to_s

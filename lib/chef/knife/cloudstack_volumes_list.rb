@@ -50,7 +50,6 @@ class Chef
             volume_list << volume_size.to_s
             volume_list << volume['type']
             if (volume['vmdisplayname'].nil?)
-              puts "NULL VM"
               volume_list << ' '
             else
               volume_list << volume['vmdisplayname']
