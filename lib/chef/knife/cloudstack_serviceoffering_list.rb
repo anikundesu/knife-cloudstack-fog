@@ -45,7 +45,7 @@ class Chef
             serviceofferings.each do |serviceoffering|
               serviceoffering_list << serviceoffering['id'].to_s
               serviceoffering_list << serviceoffering['name'].to_s
-              serviceoffering_list << serviceoffering['description'].to_s
+              serviceoffering_list << serviceoffering['displaytext'].to_s
               serviceoffering_list << serviceoffering['cpunumber'].to_s
               serviceoffering_list << serviceoffering['cpuspeed'].to_s
               serviceoffering_list << serviceoffering['memory'].to_s
