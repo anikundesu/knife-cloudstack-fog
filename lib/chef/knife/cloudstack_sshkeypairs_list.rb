@@ -36,7 +36,7 @@ class Chef
           ui.color('Fingerprint', :bold),
           ui.color('Private Key', :bold)
         ]
-        response = connection.list_service_offerings['listsshkeypairsresponse']
+        response = connection.list_ssh_key_pairs['listsshkeypairsresponse']
           if sshkeypairs = response['sshkeypair']
             sshkeypairs.each do |sshkeypair|
               sshkeypair_list << sshkeypair['name'].to_s
