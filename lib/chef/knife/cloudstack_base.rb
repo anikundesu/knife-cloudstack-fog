@@ -3,6 +3,10 @@
 # Copyright:: Copyright (c) 2011 Clogeny Technologies.
 # License:: Apache License, Version 2.0
 #
+# Author:: Jeff Moody (<jmoody@datapipe.com>)
+# Copyright:: Copyright (c) 2012 Datapipe
+# License:: Apache License, Version 2.0
+#
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
@@ -38,24 +42,18 @@ class Chef
             :short => "-A ID",
             :long => "--cloudstack-access-key-id KEY",
             :description => "Your Cloudstack Access Key ID",
-            :proc => Proc.new { |key| Chef::Config[:knife][:cloudstack_access_key_id] = key }
+            :proc => Proc.new { |pkey| Chef::Config[:knife][:cloudstack_access_key_id] = pkey }
 
           option :cloudstack_secret_access_key,
             :short => "-K SECRET",
             :long => "--cloudstack-secret-access-key SECRET",
             :description => "Your Cloudstack API Secret Access Key",
-            :proc => Proc.new { |key| Chef::Config[:knife][:cloudstack_secret_access_key] = key }
+            :proc => Proc.new { |skey| Chef::Config[:knife][:cloudstack_secret_access_key] = skey }
 
           option :cloudstack_api_endpoint,
             :long => "--cloudstack-api-endpoint ENDPOINT",
             :description => "Your Cloudstack API endpoint",
-            :proc => Proc.new { |endpoint| Chef::Config[:knife][:cloudstack_api_endpoint] = endpoint }
-
-          option :region,
-            :long => "--region REGION",
-            :description => "Your Cloudstack region",
-            :proc => Proc.new { |region| Chef::Config[:knife][:region] = region }
-          
+            :proc => Proc.new { |endpoint| Chef::Config[:knife][:cloudstack_api_endpoint] = endpoint }          
         end
       end
 

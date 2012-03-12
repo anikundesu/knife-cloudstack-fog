@@ -36,7 +36,7 @@ class Chef
              :description => "List the rules contained within a Security Group, specified by name.",
              :default => 'none'
 
-      def sg_details_list(securitygroup_list, groups, options={})
+      def sg_details_list(securitygroup_list, securitygroup_details, groups, options={})
         temp = groups
         if groupid = options[:groupid]
           temp.reject!{|g| g['id'] != groupid.to_i}
@@ -46,21 +46,24 @@ class Chef
         end
         
         temp.each do |securitygroup|
+          securitygroup_list << securitygroup['id'].to_s
+          securitygroup_list << securitygroup['name'].to_s
+          securitygroup_list << securitygroup['description'].to_s
           if securitygroup['ingressrule'].nil?
-            securitygroup_list << ' '
+            securitygroup_details << ' '
           else
             securitygroup['ingressrule'].each do |ingressrule|
               rule_details = []
-              securitygroup_list << ingressrule['protocol'].to_s
-              securitygroup_list << ingressrule['startport'].to_s
-              securitygroup_list << ingressrule['endport'].to_s
+              securitygroup_details << ingressrule['protocol'].to_s
+              securitygroup_details << ingressrule['startport'].to_s
+              securitygroup_details << ingressrule['endport'].to_s
               if ingressrule['cidr'].nil?
                 rule_details << ingressrule['securitygroupname'].to_s
                 rule_details << ingressrule['account'].to_s
               else
                 rule_details << ingressrule['cidr'].to_s
               end
-              securitygroup_list << rule_details.join(", ")
+              securitygroup_details << rule_details.join(", ")
             end
           end
         end
@@ -89,21 +92,27 @@ class Chef
             end
           puts ui.list(securitygroup_list, :columns_across, 3)
         else
-          securitygroup_list = [
+          securitygroup_details = [
             ui.color('Protocol', :bold),
             ui.color('Start Port', :bold),
             ui.color('End Port', :bold),
             ui.color('Restricted To', :bold)
           ]
+          securitygroup_list = [
+            ui.color('ID', :bold),
+            ui.color('Name', :bold),
+            ui.color('Description', :bold)
+            ]
                         
             if response = connection.list_security_groups['listsecuritygroupsresponse']
               if securitygroups = response['securitygroup']
                 filters = {}
                 filters[:groupid] = groupid unless groupid == 'none'
                 filters[:groupname] = groupname unless groupname == 'none'
-                sg_details_list(securitygroup_list, securitygroups, filters)
-                  
-                puts ui.list(securitygroup_list, :columns_across, 4)
+                sg_details_list(securitygroup_list, securitygroup_details, securitygroups, filters)
+                
+                puts ui.list(securitygroup_list, :columns_across, 3)
+                puts ui.list(securitygroup_details, :columns_across, 4)
               end
             end
             

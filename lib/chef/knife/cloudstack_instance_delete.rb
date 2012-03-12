@@ -17,3 +17,20 @@
 
 
 require 'chef/knife/cloudstack_base'
+
+class Chef
+  class Knife
+    class CloudstackInstanceDelete < Knife
+      deps do
+        require 'fog'
+        require 'readline'
+        require 'chef/json_compat'
+        require 'chef/knife/bootstrap'
+        Chef::Knife::Bootstrap.load_deps
+      end
+      
+      banner "knife cloudstack server delete (options)"
+      
+    end
+  end
+end

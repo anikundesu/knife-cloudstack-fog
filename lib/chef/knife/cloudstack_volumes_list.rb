@@ -39,6 +39,7 @@ class Chef
           ui.color('Virtual Machine', :bold),
           ui.color('State', :bold)
         ]
+        
         response = connection.list_volumes['listvolumesresponse']
         
         if volumes = response['volume']
