@@ -74,7 +74,7 @@ class Chef
         :long => "--bootstrap-version VERSION",
         :description => "The version of Chef to install",
         :proc => Proc.new { |v| Chef::Config[:knife][:bootstrap_version] = v },
-	:default => "0.10.4"
+	      :default => "0.10.4"
 
       option :distro,
         :short => "-d DISTRO",
@@ -137,8 +137,8 @@ class Chef
           :image_id => locate_config_value(:image),
           :flavor_id => locate_config_value(:flavor),
           :zoneid => Chef::Config[:knife][:availability_zone],
-	  :displayname => Chef::Config[:knife][:chef_node_name],
-	  :name => Chef::Config[:knife][:chef_node_name]
+	        :displayname => Chef::Config[:knife][:chef_node_name],
+	        :name => Chef::Config[:knife][:chef_node_name]
         }
 	ipaddress_def = {
 	  :zoneid => Chef::Config[:knife][:availability_zone]
@@ -188,7 +188,7 @@ class Chef
         bootstrap.name_args = [server.ipaddress.to_s]
         bootstrap.config[:run_list] = config[:run_list]
         bootstrap.config[:ssh_user] = 'root'
-	bootstrap.config[:ssh_password] = server.password.to_s || 'Password01'
+	      bootstrap.config[:ssh_password] = server.password.to_s || 'Password01'
         bootstrap.config[:identity_file] = config[:identity_file]
         bootstrap.config[:chef_node_name] = config[:chef_node_name] || server.id.to_s
         bootstrap.config[:prerelease] = config[:prerelease]

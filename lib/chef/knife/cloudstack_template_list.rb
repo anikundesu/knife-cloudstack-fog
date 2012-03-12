@@ -31,11 +31,60 @@ class Chef
       option :filter,
              :short => "-L FILTER",
              :long => "--filter FILTER",
-             :description => "The template search filter. Default is 'featured'",
+             :description => "The template search filter. Default is 'featured.' Other options are 'self,' 'self-executable,' 'executable,' and 'community.'",
              :default => "featured"
+      option :zone,
+             :short => "-Z ZONE",
+             :long => "--zone ZONE",
+             :description => "Limit responses to templates only located in a specific zone. Default provides templates from all zones.",
+             :default => "all"
+      option :hypervisor,
+             :short => "-H HYPERVISOR",
+             :long => "--hypervisor HYPERVISOR",
+             :description => "Limit responses to templates only running on a specific hypervisor. Default provides templates from all hypervisors.",
+             :default => "all"
+     option :zoneid,
+            :short => "-z ZONEID",
+            :long => "--zoneid ZONEID",
+            :description => "Limit responses to templates only running in a specific zone (specified by ID #). Default provides templates from all zones.",
+            :default => "all"
+      option :templateid,
+             :short => "-T TEMPLATEID",
+             :long => "--templateid TEMPLATEID",
+             :description => "Limit responses to a single template ID. Default provides all templates.",
+             :default => "all"     
+             
+      
+      def print_templates(template_list,templates,options={})
+        temp = templates
 
+        if templateid = options[:templateid]
+          temp.reject!{|t| t['id'] != templateid.to_i}
+        end
+        if zoneid = options[:zoneid]
+          temp.reject!{|t| t['zoneid'] != zoneid.to_i}
+        end
+        if zone = options[:zone]
+          temp.reject!{|t| t['zonename'] != zone}
+        end
+        if hypervisor = options[:hypervisor]
+          temp.reject!{|t| t['hypervisor'] != hypervisor}
+        end
+        
+        temp.each do |template|
+          template_list << template['id'].to_s
+          template_list << template['hypervisor']
+
+          template_size = template['size']
+          template_size = (template_size/1024/1024/1024)
+          template_list << template_size.to_s
+
+          template_list << template['zonename']
+          template_list << template['name']
+        end
+      end
+      
       def run
-
         validate!
 
         template_list = [
@@ -46,26 +95,26 @@ class Chef
           ui.color('Name', :bold)          
         ]
         
-        filter = config['filter']
-        settings = connection.list_templates('templatefilter' => 'featured')
+        filter = locate_config_value(:filter)
+        zone = locate_config_value(:zone)
+        zoneid = locate_config_value(:zoneid)
+        hypervisor = locate_config_value(:hypervisor)
+        templateid = locate_config_value(:templateid)
+                
+        settings = connection.list_templates('templatefilter' => filter)
         if response = settings['listtemplatesresponse']
-          response.each do |templates|
-            if templates = response['template']
-              templates.each do |template|
-                template_list << template['id'].to_s
-                template_list << template['hypervisor']
-
-                template_size = template['size']
-                template_size = (template_size/1024/1024/1024)
-                template_list << template_size.to_s
-
-                template_list << template['zonename']
-                template_list << template['name']                
-              end
-            end
+          if templates = response['template']
+            filters = {}
+            filters[:hypervisor] = hypervisor unless hypervisor == 'all'
+            filters[:zone] = zone unless zone == 'all'
+            filters[:zoneid] = zoneid unless zoneid == 'all'
+            filters[:templateid] = templateid unless templateid == 'all'
+            
+            print_templates(template_list,templates,filters)
           end
           puts ui.list(template_list, :columns_across, 5)
         end
+        
       end
     end
   end
