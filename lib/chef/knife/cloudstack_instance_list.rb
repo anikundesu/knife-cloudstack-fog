@@ -75,7 +75,7 @@ class Chef
                 case state
                   when 'shutting-down','terminated','stopping','stopped'
                     ui.color(state, :red)
-                  when 'pending'
+                  when 'pending', 'starting'
                     ui.color(state, :yellow)
                   else
                     ui.color(state, :green)

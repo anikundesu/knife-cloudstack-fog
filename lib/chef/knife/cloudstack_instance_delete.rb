@@ -29,7 +29,27 @@ class Chef
         Chef::Knife::Bootstrap.load_deps
       end
       
-      banner "knife cloudstack server delete (options)"
+      banner "knife cloudstack server delete INSTANCE_ID [INSTANCE_ID] (options)"
+      
+      def run
+
+        validate!
+
+        @name_args.each do |instance_id|
+          instance = connection.list_virtual_machines('name' => instance_id)
+          
+          puts "#{ui.color("Name", :red)}: #{instance['name'].to_s}"
+          puts "#{ui.color("Public IP", :red)}: #{instance['ipaddress'].to_s}"
+
+          puts "\n"
+          confirm("Do you really want to delete this server?")
+
+          connection.destroy_virtual_machine(instance_id)
+
+          ui.warn("Deleted server #{instance['name'].to_s}")
+        end
+      end
+      
       
     end
   end

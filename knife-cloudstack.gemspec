@@ -12,7 +12,7 @@ Gem::Specification.new do |s|
   s.email       = ["chirag@clogeny.com", "jmoody@datapipe.com"]
   s.homepage    = "https://github.com/chiragjog/knife-cloudstack"
   s.summary     = %q{Cloudstack Compute Support for Chef's Knife Command}
-  s.description = s.summary
+  s.description = %q{Support for the Chef Knife command, leveraging FOG, for the Citrix CloudStack API}
 
   s.files         = `git ls-files`.split("\n")
   s.test_files    = `git ls-files -- {test,spec,features}/*`.split("\n")
