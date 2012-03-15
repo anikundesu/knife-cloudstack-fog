@@ -68,7 +68,6 @@ class Chef
               instance_list << instance['zonename'].to_s
               instance_list << instance['serviceofferingname'].to_s
               instance_list << instance['templatedisplaytext'].to_s
-              #instance_list << instance['state'].to_s
               
               instance_list << begin
                 state = instance['state'].to_s.downcase

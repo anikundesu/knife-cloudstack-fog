@@ -21,34 +21,31 @@ require 'chef/knife/cloudstack_base'
 class Chef
   class Knife
     class CloudstackInstanceDelete < Knife
-      deps do
-        require 'fog'
-        require 'readline'
-        require 'chef/json_compat'
-        require 'chef/knife/bootstrap'
-        Chef::Knife::Bootstrap.load_deps
-      end
-      
-      banner "knife cloudstack server delete INSTANCE_ID [INSTANCE_ID] (options)"
+
+      include Knife::CloudstackBase
+      banner "knife cloudstack instance delete INSTANCE_ID [INSTANCE_ID] (options)"
       
       def run
-
-        validate!
+        
+        if @name_args.nil?
+          puts #{ui.color("Please provide an Instance ID.", :red)}
+        end
 
         @name_args.each do |instance_id|
-          instance = connection.list_virtual_machines('name' => instance_id)
-          
-          puts "#{ui.color("Name", :red)}: #{instance['name'].to_s}"
-          puts "#{ui.color("Public IP", :red)}: #{instance['ipaddress'].to_s}"
-
+          response = connection.list_virtual_machines('name' => instance_id)
+          instance_name = response['listvirtualmachinesresponse']['virtualmachine'].first['name']
+          instance_ip = response['listvirtualmachinesresponse']['virtualmachine'].first['nic'].first['ipaddress']
+          real_instance_id = response['listvirtualmachinesresponse']['virtualmachine'].first['id']
+          puts "#{ui.color("Name", :red)}: #{instance_name}"
+          puts "#{ui.color("Public IP", :red)}: #{instance_ip}"
           puts "\n"
-          confirm("Do you really want to delete this server?")
-
-          connection.destroy_virtual_machine(instance_id)
-
-          ui.warn("Deleted server #{instance['name'].to_s}")
+          confirm("#{ui.color("Do you really want to delete this server", :red)}")
+          connection.destroy_virtual_machine('id' => real_instance_id)
+          ui.warn("Deleted server #{instance_name}")
         end
       end
+              
+
       
       
     end
