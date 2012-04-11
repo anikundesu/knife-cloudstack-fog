@@ -27,11 +27,11 @@ require 'chef/knife/cloudstack_base'
 
 class Chef
   class Knife
-    class CloudstackInstanceList < Knife
+    class CloudstackServerList < Knife
 
       include Knife::CloudstackBase
 
-      banner "knife cloudstack instance list (options)"
+      banner "knife cloudstack server list (options)"
 
       def run
         $stdout.sync = true

@@ -20,11 +20,11 @@ require 'chef/knife/cloudstack_base'
 
 class Chef
   class Knife
-    class CloudstackSshkeypairList < Knife
+    class CloudstackKeypairList < Knife
 
       include Knife::CloudstackBase
 
-      banner "knife cloudstack sshkeypair list (options)"
+      banner "knife cloudstack keypair list (options)"
             
       def run
         $stdout.sync = true

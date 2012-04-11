@@ -20,10 +20,10 @@ require 'chef/knife/cloudstack_base'
 
 class Chef
   class Knife
-    class CloudstackInstanceDelete < Knife
+    class CloudstackServerDelete < Knife
 
       include Knife::CloudstackBase
-      banner "knife cloudstack instance delete INSTANCE_ID [INSTANCE_ID] (options)"
+      banner "knife cloudstack server delete INSTANCE_ID [INSTANCE_ID] (options)"
       
       def run
         

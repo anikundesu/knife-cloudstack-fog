@@ -24,11 +24,11 @@ require 'chef/knife/cloudstack_base'
 
 class Chef
   class Knife
-    class CloudstackInstanceCreate < Knife
+    class CloudstackServerCreate < Knife
       
       include Knife::CloudstackBase
       
-      banner "knife cloudstack instance create (options)"
+      banner "knife cloudstack server create (options)"
       
       option  :cloudstack_serviceid,
               :short => "-s SERVICEID",
@@ -108,6 +108,16 @@ class Chef
               :short => "-N NAME",
               :long => "--server-name NAME",
               :description => "The server name"
+      
+      option  :keypair,
+              :short => "-k KEYPAIR",
+              :long => "--keypair KEYPAIR",
+              :description => "The CloudStack Key Pair to use for password generation/storage"
+              
+      option  :diskoffering,
+              :short => "-D DISKOFFERINGID",
+              :long => "--diskoffering DISKOFFERINGID",
+              :description => "Specifies either the Disk Offering ID for the ROOT disk for an ISO template, or a DATA disk."
         
       def bootstrap_for_node(host, user, password)
         Chef::Log.debug("Bootstrap host: #{host}")
@@ -185,6 +195,14 @@ class Chef
             security_groups.push(name)
           end
           options['securitygroupnames'] = security_groups
+        end
+        
+        if locate_config_value(:keypair) != nil
+          options['keypair'] = locate_config_value(:keypair)
+        end
+        
+        if locate_config_value(:diskoffering) != nil
+          options['diskofferingid'] = locate_config_value(:diskoffering)
         end
         
         Chef::Log.debug("Options: #{options} \n")
