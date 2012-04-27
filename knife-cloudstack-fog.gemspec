@@ -13,10 +13,7 @@ Gem::Specification.new do |s|
   s.homepage    = "https://github.com/fifthecho/knife-cloudstack-fog"
   s.summary     = %q{Cloudstack Compute Support for Chef's Knife Command}
   s.description = %q{Support for the Chef Knife command, leveraging FOG, for the Citrix CloudStack API}
-
-  s.files         = `git ls-files`.split("\n")
-  s.test_files    = `git ls-files -- {test,spec,features}/*`.split("\n")
-  s.executables   = `git ls-files -- bin/*`.split("\n").map{ |f| File.basename(f) }
+  s.files = Dir['lib/**/*.rb']
   s.require_paths = ["lib"]
 
   s.add_dependency "fog", "~> 1.3.1"

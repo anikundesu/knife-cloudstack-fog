@@ -28,31 +28,31 @@ class Chef
       include Knife::CloudstackBase
 
       banner "knife cloudstack template list (options)"
-      option :filter,
-             :short => "-L FILTER",
-             :long => "--filter FILTER",
-             :description => "The template search filter. Default is 'featured.' Other options are 'self,' 'self-executable,' 'executable,' and 'community.'",
-             :default => "featured"
-      option :zone,
-             :short => "-Z ZONE",
-             :long => "--zone ZONE",
-             :description => "Limit responses to templates only located in a specific zone. Default provides templates from all zones.",
-             :default => "all"
-      option :hypervisor,
-             :short => "-H HYPERVISOR",
-             :long => "--hypervisor HYPERVISOR",
-             :description => "Limit responses to templates only running on a specific hypervisor. Default provides templates from all hypervisors.",
-             :default => "all"
-     option :zoneid,
-            :short => "-z ZONEID",
-            :long => "--zoneid ZONEID",
-            :description => "Limit responses to templates only running in a specific zone (specified by ID #). Default provides templates from all zones.",
-            :default => "all"
-      option :templateid,
-             :short => "-T TEMPLATEID",
-             :long => "--templateid TEMPLATEID",
-             :description => "Limit responses to a single template ID. Default provides all templates.",
-             :default => "all"     
+      option  :filter,
+              :short => "-L FILTER",
+              :long => "--filter FILTER",
+              :description => "The template search filter. Default is 'featured.' Other options are 'self,' 'self-executable,' 'executable,' and 'community.'",
+              :default => "featured"
+      option  :zone,
+              :short => "-Z ZONE",
+              :long => "--zone ZONE",
+              :description => "Limit responses to templates only located in a specific zone. Default provides templates from all zones.",
+              :default => "all"
+      option  :hypervisor,
+              :short => "-H HYPERVISOR",
+              :long => "--hypervisor HYPERVISOR",
+              :description => "Limit responses to templates only running on a specific hypervisor. Default provides templates from all hypervisors.",
+              :default => "all"
+      option  :zoneid,
+              :short => "-z ZONEID",
+              :long => "--zoneid ZONEID",
+              :description => "Limit responses to templates only running in a specific zone (specified by ID #). Default provides templates from all zones.",
+              :default => "all"
+      option  :templateid,
+              :short => "-T TEMPLATEID",
+              :long => "--templateid TEMPLATEID",
+              :description => "Limit responses to a single template ID. Default provides all templates.",
+              :default => "all"     
              
       
       def print_templates(template_list,templates,options={})
