@@ -10,13 +10,13 @@ Be sure you are running the latest version Chef. Versions earlier than 0.10.0 do
 
     $ gem install chef
 
-Also ensure you are running the latest version of Fog. Versions earlier than 1.0.0 don't support Cloudstack Cloud:
+Also ensure you are running the latest version of Fog. Versions earlier than 1.3.1 don't fully support Cloudstack Cloud:
     
     $ gem update fog 
  
 This plugin is distributed as a Ruby Gem. To install it, run:
 
-    $ gem install knife-cloudstack
+    $ gem install knife-cloudstack-fog
 
 Depending on your system's configuration, you may need to run this command with root privileges.
 
