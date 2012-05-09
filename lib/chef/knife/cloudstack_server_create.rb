@@ -109,6 +109,11 @@ class Chef
               :long => "--server-name NAME",
               :description => "The server name"
       
+      option  :host_name,
+              :short => "-H NAME",
+              :long => "--hostname NAME",
+              :description => "The hostname"
+      
       option  :keypair,
               :short => "-k KEYPAIR",
               :long => "--keypair KEYPAIR",
@@ -180,6 +185,10 @@ class Chef
         
         if locate_config_value(:server_name) != nil
           options['displayname'] = locate_config_value(:server_name)
+        end
+
+        if locate_config_value(:host_name) != nil
+          options['name'] = locate_config_value(:host_name)
         end
         
         security_groups = []
