@@ -52,7 +52,7 @@ class Chef
               serviceoffering_list << serviceoffering['networkrate'].to_s
             end
           end
-        puts ui.list(serviceoffering_list, :columns_across, 7)
+        puts ui.list(serviceoffering_list, :uneven_columns_across, 7)
 
       end
         

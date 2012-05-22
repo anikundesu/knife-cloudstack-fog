@@ -68,7 +68,7 @@ class Chef
               end
             end
           end
-          puts ui.list(volume_list, :columns_across, 6)
+          puts ui.list(volume_list, :uneven_columns_across, 6)
         end
 
       end

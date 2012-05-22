@@ -112,7 +112,7 @@ class Chef
             
             print_templates(template_list,templates,filters)
           end
-          puts ui.list(template_list, :columns_across, 5)
+          puts ui.list(template_list, :uneven_columns_across, 5)
         end
         
       end

@@ -107,7 +107,7 @@ class Chef
           filters[:zoneid] = zoneid unless zoneid == 'all'
           filters[:state] = state unless state == 'all'
           print_servers(server_list, virtual_machines, filters)
-          puts ui.list(server_list, :columns_across, 8)
+          puts ui.list(server_list, :uneven_columns_across, 8)
         end
       end
     end
