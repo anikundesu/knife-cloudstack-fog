@@ -45,13 +45,6 @@ class Chef
               :long => "--zoneid ZONE",
               :description => "The CloudStack zone ID for the server."
 
-      option  :cloudstack_networknames,
-              :short => "-W NETWORKNAMES",
-              :long => "--networknames NETWORKNAMES",
-              :description => "Comma separated list of CloudStack network names. Each group name must be encapuslated in quotes if it contains whitespace.",
-              :proc => lambda { |n| n.split(/[\s,]+/) },
-              :default => []
-
       option  :cloudstack_networkids,
               :short => "-w NETWORKIDS",
               :long => "--networkids NETWORKIDS",
@@ -189,6 +182,15 @@ class Chef
 
         if locate_config_value(:host_name) != nil
           options['name'] = locate_config_value(:host_name)
+        end
+        
+        network_ids = []
+        if locate_config_value(:cloudstack_networkids) != []
+          cs_networkids = locate_config_value(:cloudstack_networkids)
+          cs_networkids.each do |id|
+            network_ids.push(id)
+          end
+          options['networkids'] = network_ids
         end
         
         security_groups = []
