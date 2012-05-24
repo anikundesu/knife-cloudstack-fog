@@ -73,6 +73,7 @@ class Chef
         
         temp.each do |template|
           template_list << template['id'].to_s
+          template['hypervisor'] = ' ' if template['hypervisor'].nil?
           template_list << template['hypervisor']
 
           template_size = template['size']
