@@ -66,6 +66,7 @@ class Chef
           server_list << instance['zonename'].to_s
           server_list << instance['serviceofferingname'].to_s
           server_list << instance['templatedisplaytext'].to_s
+          server_list << instance['hypervisor'].to_s
           
           server_list << begin
             state = instance['state'].to_s.downcase
@@ -95,6 +96,7 @@ class Chef
           ui.color('Server Zone', :bold),
           ui.color('Service Offering', :bold),
           ui.color('Template', :bold),
+          ui.color('Hypervisor', :bold),
           ui.color('State', :bold)
         ]
         
@@ -107,7 +109,7 @@ class Chef
           filters[:zoneid] = zoneid unless zoneid == 'all'
           filters[:state] = state unless state == 'all'
           print_servers(server_list, virtual_machines, filters)
-          puts ui.list(server_list, :uneven_columns_across, 8)
+          puts ui.list(server_list, :uneven_columns_across, 9)
         end
       end
     end
