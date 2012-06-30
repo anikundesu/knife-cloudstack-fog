@@ -2,6 +2,8 @@
 # Copyright:: Copyright (c) 2012 Datapipe
 # License:: Apache License, Version 2.0
 #
+# Modified by :: Takashi Kanai (<anikundesu@gmail.com>)
+# 
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
@@ -200,7 +202,7 @@ class Chef
             security_groups.push(id)
           end
           options['securitygroupids'] = security_groups
-        else
+        elsif locate_config_value(:cloudstack_groupnames) != []
           cs_groupnames = locate_config_value(:cloudstack_groupnames)
           cs_groupnames.each do |name|
             security_groups.push(name)
