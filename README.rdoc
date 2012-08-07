@@ -94,7 +94,7 @@ Outputs a list of all available disk offerings available to the currently config
 
 = LICENSE:
 
-Author:: Chirag Jog (<chirag@clogeny.com>), Jeff Moody (<jmoody@datapipe.com>)
+Author:: Chirag Jog (<chirag@clogeny.com>), Jeff Moody (<jmoody@datapipe.com>), dfuentes77, Takashi Kanai (<anikundesu@gmail.com>)
 Copyright:: Copyright (c) 2011 Clogeny, 2012 Datapipe
 License:: Apache License, Version 2.0
 

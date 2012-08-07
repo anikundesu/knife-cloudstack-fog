@@ -1,4 +1,4 @@
-# Author:: Jeff Moody (<jmoody@datapipe.com>)
+# Author:: Jeff Moody (<jmoody@datapipe.com>), Takashi Kanai (<anikundesu@gmail.com>)
 # Copyright:: Copyright (c) 2012 Datapipe
 # License:: Apache License, Version 2.0
 #
@@ -203,7 +203,7 @@ class Chef
             security_groups.push(id)
           end
           options['securitygroupids'] = security_groups
-        else
+        elsif locate_config_value(:cloudstack_groupnames) != []
           cs_groupnames = locate_config_value(:cloudstack_groupnames)
           cs_groupnames.each do |name|
             security_groups.push(name)
