@@ -1,10 +1,7 @@
-# Author:: Chirag Jog (<chirag@clogeny.com>)
-# Copyright:: Copyright (c) 2011 Clogeny Technologies.
+# Author:: Chirag Jog (<chirag@clogeny.com>), Jeff Moody (<jmoody@datapipe.com>), dfuentes77
+# Copyright:: Copyright (c) 2011 Clogeny Technologies, Copyright (c) 2012 Datapipe
 # License:: Apache License, Version 2.0
 #
-# Author:: Jeff Moody (<jmoody@datapipe.com>)
-# Copyright:: Copyright (c) 2012 Datapipe
-# License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.

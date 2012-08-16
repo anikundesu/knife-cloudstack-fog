@@ -1,4 +1,4 @@
-# Author:: Jeff Moody (<jmoody@datapipe.com>)
+# Author:: Jeff Moody (<jmoody@datapipe.com>), Takashi Kanai (<anikundesu@gmail.com>)
 # Copyright:: Copyright (c) 2012 Datapipe
 # License:: Apache License, Version 2.0
 #
@@ -161,6 +161,9 @@ class Chef
           false
         rescue Errno::EHOSTUNREACH
           sleep 2
+          false
+        rescue Errno::ENETUNREACH
+          sleep 30
           false
         ensure
         tcp_socket && tcp_socket.close
