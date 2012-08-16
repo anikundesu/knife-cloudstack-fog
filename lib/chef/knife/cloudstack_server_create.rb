@@ -99,6 +99,11 @@ class Chef
               :long => "--ssh-password PASSWORD",
               :description => "The ssh password"
               
+      option  :identity_file,
+              :short => "-i PRIVATE_KEY_FILE",
+              :long => "--identity-file PRIVATE_KEY_FILE",
+              :description => "The Private key file for authenticating SSH session. --keypair option is also needed."
+            
       option  :server_name,
               :short => "-N NAME",
               :long => "--server-name NAME",
@@ -227,7 +232,7 @@ class Chef
         print "#{ui.color("Waiting for server", :magenta)}"
         while server_start['queryasyncjobresultresponse'].fetch('jobstatus') != 1
           print "#{ui.color(".", :magenta)}"
-          sleep(1)
+          sleep(15)
           server_start = connection.query_async_job_result('jobid'=>jobid)
         end
         puts "\n\n"
