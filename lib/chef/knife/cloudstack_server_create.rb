@@ -1,5 +1,5 @@
 # Author:: Jeff Moody (<jmoody@datapipe.com>), Takashi Kanai (<anikundesu@gmail.com>)
-# Copyright:: Copyright (c) 2012 Datapipe
+# Copyright:: Copyright (c) 2012 Datapipe,  Copyright (c) 2012 IDC Frontier Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -96,7 +96,12 @@ class Chef
               :short => "-P PASSWORD",
               :long => "--ssh-password PASSWORD",
               :description => "The ssh password"
-              
+      
+      option  :identity_file,        
+              :short => "-i PRIVATE_KEY_FILE",
+              :long => "--identity-file PRIVATE_KEY_FILE",
+              :description => "The Private key file for authenticating SSH session. --keypair option is also needed."
+                      
       option  :server_name,
               :short => "-N NAME",
               :long => "--server-name NAME",
@@ -110,7 +115,7 @@ class Chef
       option  :keypair,
               :short => "-k KEYPAIR",
               :long => "--keypair KEYPAIR",
-              :description => "The CloudStack Key Pair to use for password generation/storage"
+              :description => "The CloudStack Key Pair to use for SSH key authentication."
               
       option  :diskoffering,
               :short => "-D DISKOFFERINGID",
@@ -228,7 +233,7 @@ class Chef
         print "#{ui.color("Waiting for server", :magenta)}"
         while server_start['queryasyncjobresultresponse'].fetch('jobstatus') != 1
           print "#{ui.color(".", :magenta)}"
-          sleep(1)
+          sleep(15)
           server_start = connection.query_async_job_result('jobid'=>jobid)
         end
         puts "\n\n"
