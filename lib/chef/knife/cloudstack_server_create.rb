@@ -1,9 +1,7 @@
 # Author:: Jeff Moody (<jmoody@datapipe.com>), Takashi Kanai (<anikundesu@gmail.com>)
-# Copyright:: Copyright (c) 2012 Datapipe
+# Copyright:: Copyright (c) 2012 Datapipe,  Copyright (c) 2012 IDC Frontier Inc.
 # License:: Apache License, Version 2.0
 #
-# Modified by :: Takashi Kanai (<anikundesu@gmail.com>)
-# 
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
@@ -98,12 +96,12 @@ class Chef
               :short => "-P PASSWORD",
               :long => "--ssh-password PASSWORD",
               :description => "The ssh password"
-              
-      option  :identity_file,
+      
+      option  :identity_file,        
               :short => "-i PRIVATE_KEY_FILE",
               :long => "--identity-file PRIVATE_KEY_FILE",
               :description => "The Private key file for authenticating SSH session. --keypair option is also needed."
-            
+                      
       option  :server_name,
               :short => "-N NAME",
               :long => "--server-name NAME",
@@ -117,7 +115,7 @@ class Chef
       option  :keypair,
               :short => "-k KEYPAIR",
               :long => "--keypair KEYPAIR",
-              :description => "The CloudStack Key Pair to use for password generation/storage"
+              :description => "The CloudStack Key Pair to use for SSH key authentication."
               
       option  :diskoffering,
               :short => "-D DISKOFFERINGID",
