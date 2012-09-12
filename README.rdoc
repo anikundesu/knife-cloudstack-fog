@@ -87,6 +87,10 @@ Outputs a list of all available keypairs available to the currently configured C
 
 Outputs a list of all available network offerings available to the currently configured Cloudstack Compute cloud account. This information is necessary to locate a network ID when instantiating a server with the <tt>knife cloudstack server create</tt> subcommand if your Cloudstack Compute cloud requires a server be associated with a particular network offering.
 
+== knife cloudstack publicip list
+
+Outputs a list of all public ip addresses assigned to the account. This sub command is available only on advanced network (VLAN enabled) zone.
+
 == knife cloudstack securitygroup list
 
 Outputs a list of all available security groups defined for the currently configured Cloudstack Compute cloud account. This information is necessary to locate a security group ID when instantiating a server with the <tt>knife cloudstack server create</tt> subcommand if your Cloudstack Compute cloud requires a server be associated with a security group.
