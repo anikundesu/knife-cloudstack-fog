@@ -9,8 +9,8 @@
   <meta name="author" content="@anikundesu">
 
   
-  <meta name="description" content=" Blog Archive 2012 プロジェクトページを開設しました。
-Sep 27 2012 Recent Posts プロジェクトページを開設しました。 ">
+  <meta name="description" content="Blog Archive 2012 プロジェクトページを開設しました。
+Sep 27 2012 Recent Posts プロジェクトページを開設しました。 GitHub Repos Status updating... @anikundesu on GitHub $.domReady( &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -26,6 +26,7 @@ Sep 27 2012 Recent Posts プロジェクトページを開設しました。 ">
   <script src="/knife-cloudstack-fog/javascripts/ender.js"></script>
   <script src="/knife-cloudstack-fog/javascripts/octopress.js" type="text/javascript"></script>
   <link href="/atom.xml" rel="alternate" title="Knife-CloudStack-fog Project Page" type="application/atom+xml">
+  <link href='http://fonts.googleapis.com/css?family=Lato:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
   <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
 <link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
 <link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
@@ -40,6 +41,7 @@ Sep 27 2012 Recent Posts プロジェクトページを開設しました。 ">
   
     <h2>A knife extention for operating CloudStack with Chef.</h2>
   
+  <div class="clear"></div>
 </hgroup>
 
 </header>
@@ -107,6 +109,51 @@ Sep 27 2012 Recent Posts プロジェクトページを開設しました。 ">
   </ul>
 </section>
 
+<section>
+  <h1>GitHub Repos</h1>
+  <ul id="gh_repos">
+    <li class="loading">Status updating...</li>
+  </ul>
+  
+  <a href="https://github.com/anikundesu">@anikundesu</a> on GitHub
+  
+  <script type="text/javascript">
+    $.domReady(function(){
+        if (!window.jXHR){
+            var jxhr = document.createElement('script');
+            jxhr.type = 'text/javascript';
+            jxhr.src = '/javascripts/libs/jXHR.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(jxhr, s);
+        }
+
+        github.showRepos({
+            user: 'anikundesu',
+            count: 4,
+            skip_forks: false,
+            target: '#gh_repos'
+        });
+    });
+  </script>
+  <script src="/knife-cloudstack-fog/javascripts/github.js" type="text/javascript"> </script>
+</section>
+
+
+<section>
+  <h1>Latest Tweets</h1>
+  <ul id="tweets">
+    <li class="loading">Status updating...</li>
+  </ul>
+  <script type="text/javascript">
+    $.domReady(function(){
+      getTwitterFeed("anikundesu", 3, false);
+    });
+  </script>
+  <script src="/knife-cloudstack-fog/javascripts/twitter.js" type="text/javascript"> </script>
+  
+    <a href="http://twitter.com/anikundesu" class="twitter-follow-button" data-show-count="false">Follow @anikundesu</a>
+  
+</section>
 
 
 
