@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <feed xmlns="http://www.w3.org/2005/Atom">
 
-  <title><![CDATA[Knife-CloudStack-fog Project Page]]></title>
-  <link href="http://anikundesu.github.com/knife-cloudstack-fog/atom.xml" rel="self"/>
+  <title><![CDATA[Category: Information | Knife-CloudStack-fog Project Page]]></title>
+  <link href="http://anikundesu.github.com/knife-cloudstack-fog/blog/categories/information/atom.xml" rel="self"/>
   <link href="http://anikundesu.github.com/knife-cloudstack-fog/"/>
   <updated>2012-09-27T05:02:05+09:00</updated>
   <id>http://anikundesu.github.com/knife-cloudstack-fog/</id>
