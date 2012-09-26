@@ -1,0 +1,293 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>README English - Knife-CloudStack-fog Project Page</title>
+  <meta name="author" content="@anikundesu">
+
+  
+  <meta name="description" content="README English = Knife Cloudstack = DESCRIPTION: This is the unofficial Opscode Knife plugin for Cloudstack Cloud. This plugin gives knife the &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://anikundesu.github.com/knife-cloudstack-fog/readme/readme.html">
+  <link href="/knife-cloudstack-fog/favicon.png" rel="icon">
+  <link href="/knife-cloudstack-fog/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <script src="/knife-cloudstack-fog/javascripts/modernizr-2.0.js"></script>
+  <script src="/knife-cloudstack-fog/javascripts/ender.js"></script>
+  <script src="/knife-cloudstack-fog/javascripts/octopress.js" type="text/javascript"></script>
+  <link href="/atom.xml" rel="alternate" title="Knife-CloudStack-fog Project Page" type="application/atom+xml">
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/knife-cloudstack-fog/">Knife-CloudStack-fog Project Page</a></h1>
+  
+    <h2>A knife extention for operating CloudStack with Chef.</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:anikundesu.github.com/knife-cloudstack-fog" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/knife-cloudstack-fog/">Blog</a></li>
+  <li><a href="/knife-cloudstack-fog/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article role="article">
+  
+  <header>
+    <h1 class="entry-title">README English</h1>
+    
+  </header>
+  
+  <p>= Knife Cloudstack</p>
+
+<p>= DESCRIPTION:</p>
+
+<p>This is the unofficial Opscode Knife plugin for Cloudstack Cloud. This plugin gives knife the ability to create, bootstrap, and manage instances in Cloudstack Compute clouds.</p>
+
+<p>= INSTALLATION:</p>
+
+<p>Be sure you are running the latest version Chef. Versions earlier than 0.10.0 don&#8217;t support plugins:</p>
+
+<pre><code>$ gem install chef
+</code></pre>
+
+<p>Also ensure you are running the latest version of Fog. Versions earlier than 1.3.1 don&#8217;t fully support Cloudstack Cloud:</p>
+
+<pre><code>$ gem update fog 
+</code></pre>
+
+<p>This plugin is distributed as a Ruby Gem. To install it, run:</p>
+
+<pre><code>$ gem install knife-cloudstack-fog
+</code></pre>
+
+<p>Depending on your system&#8217;s configuration, you may need to run this command with root privileges.</p>
+
+<p>= CONFIGURATION:</p>
+
+<p>In order to communicate with an Cloudstack Compute cloud&#8217;s CLOUDSTACK API you will have to tell Knife about your Cloudstack Compute cloud API endpoint, Cloudstack Access Key and Secret Access Key.  The easiest way to accomplish this is to create some entries in your <tt>knife.rb</tt> file:</p>
+
+<pre><code>### Note: You may need to append the :cloudstack_access_key_id with ":$PROJECT_NAME", if it differs from your Cloudstack Username.
+knife[:cloudstack_access_key_id]     = "Your Cloudstack Access Key ID"
+knife[:cloudstack_secret_access_key] = "Your Cloudstack Secret Access Key"
+### Note: If you are not proxying HTTPS to the Cloudstack CLOUDSTACK API port, the scheme should be HTTP, and the PORT is 8773.
+knife[:cloudstack_api_endpoint]      = "https://cloud.mycompany.com/service/Cloud"
+</code></pre>
+
+<p>If your knife.rb file will be checked into a SCM system (ie readable by others) you may want to read the values from environment variables:</p>
+
+<pre><code>knife[:cloudstack_access_key_id]     = "#{ENV['CLOUDSTACK_ACCESS_KEY']}"
+knife[:cloudstack_secret_access_key] = "#{ENV['CLOUDSTACK_SECRET_KEY']}"
+knife[:cloudstack_api_endpoint]      = "#{ENV['CLOUDSTACK_URL']}"
+</code></pre>
+
+<p>You also have the option of passing your Cloudstack API Key/Secret into the individual knife subcommands using the <tt>-A</tt> (or <tt>&#8211;cloudstack-access-key-id</tt>) <tt>-K</tt> (or <tt>&#8211;cloudstack-secret-access-key</tt>) command options</p>
+
+<pre><code># provision a new webserver
+knife cloudstack server create 'role[webserver]' -I &lt;image template&gt; -f &lt;service offering&gt; -A 'Your Cloudstack Access Key ID'  --cloudstack-api-endpoint 'https://cloud.mycompany.com/v1.0'
+</code></pre>
+
+<p>Additionally the following options may be set in your <code>knife.rb</code>:</p>
+
+<ul>
+<li>flavor</li>
+<li>image</li>
+<li>availability_zone</li>
+</ul>
+
+
+<p>= SUBCOMMANDS:</p>
+
+<p>This plugin provides the following Knife subcommands.  Specific command options can be found by invoking the subcommand with a <tt>&#8211;help</tt> flag</p>
+
+<p>== knife cloudstack server create</p>
+
+<p>Provisions a new server in an Cloudstack Compute cloud and then perform a Chef bootstrap (using the SSH protocol).  The goal of the bootstrap is to get Chef installed on the target system so it can run Chef Client with a Chef Server. The main assumption is a baseline OS installation exists (provided by the provisioning). It is primarily intended for Chef Client systems that talk to a Chef server.  By default the server is bootstrapped using the {ubuntu10.04-gems}[https://github.com/opscode/chef/blob/master/chef/lib/chef/knife/bootstrap/ubuntu10.04-gems.erb] template.  This can be overridden using the <tt>-d</tt> or <tt>&#8211;template-file</tt> command options.</p>
+
+<p>== knife cloudstack server delete</p>
+
+<p>Deletes an existing server in the currently configured Cloudstack Compute cloud account.  <b>PLEASE NOTE</b> - this does not delete the associated node and client objects from the Chef server.</p>
+
+<p>== knife cloudstack server list</p>
+
+<p>Outputs a list of all servers in the currently configured Cloudstack Compute cloud account.  <b>PLEASE NOTE</b> - this shows all instances associated with the account, some of which may not be currently managed by the Chef server.</p>
+
+<p>== knife cloudstack serviceoffering list</p>
+
+<p>Outputs a list of all available service offerings (available hardware configuration for a server) available to the currently configured Cloudstack Compute cloud account.  Each service offering has a unique combination of disk space, memory capacity and priority for CPU time.  This data can be useful when choosing a service offering ID to pass to the <tt>knife cloudstack server create</tt> subcommand.</p>
+
+<p>== knife cloudstack template list</p>
+
+<p>Outputs a list of all available templates available to the currently configured Cloudstack Compute cloud account.  A template is a collection of files used to create or rebuild a server. This data can be useful when choosing an template ID to pass to the <tt>knife cloudstack server create</tt> subcommand.</p>
+
+<p>== knife cloudstack keypair create</p>
+
+<p>Create a new SSH keypair or register a public key to the currently configured Cloudstack Compute cloud account. This command is valuable to provide password recovery options as well as associating a Cloudstack keypair with an instance for any advanced authentication methods when instantiating a server with the <tt>knife cloudstack server create</tt> subcommand.</p>
+
+<p>== knife cloudstack keypair delete</p>
+
+<p>Delete a keypair which is abailable to the currently configured Cloudstack Compute cloud account.</p>
+
+<p>== knife cloudstack keypair list</p>
+
+<p>Outputs a list of all available keypairs available to the currently configured Cloudstack Compute cloud account. This information is valuable to provide password recovery options as well as associating a Cloudstack keypair with an instance for any advanced authentication methods when instantiating a server with the <tt>knife cloudstack server create</tt> subcommand.</p>
+
+<p>== knife cloudstack networks list</p>
+
+<p>Outputs a list of all available network offerings available to the currently configured Cloudstack Compute cloud account. This information is necessary to locate a network ID when instantiating a server with the <tt>knife cloudstack server create</tt> subcommand if your Cloudstack Compute cloud requires a server be associated with a particular network offering.</p>
+
+<p>== knife cloudstack publicip create</p>
+
+<p>Assign a new public ip address to the zone specified by -z option. This sub command is available only on advanced network (VLAN enabled) zone.</p>
+
+<p>== knife cloudstack publicip list</p>
+
+<p>Outputs a list of all public ip addresses assigned to the account. This sub command is available only on advanced network (VLAN enabled) zone.</p>
+
+<p>== knife cloudstack securitygroup list</p>
+
+<p>Outputs a list of all available security groups defined for the currently configured Cloudstack Compute cloud account. This information is necessary to locate a security group ID when instantiating a server with the <tt>knife cloudstack server create</tt> subcommand if your Cloudstack Compute cloud requires a server be associated with a security group.</p>
+
+<p>== knife cloudstack zone list</p>
+
+<p>Outputs a list of all available zones available to the currently configured Cloudstack Compute cloud account. This information is necessary to locate a zone ID when instantiating a server with the <tt>knife cloudstack server create</tt> subcommand.</p>
+
+<p>== knife cloudstack diskofferings list</p>
+
+<p>Outputs a list of all available disk offerings available to the currently configured Cloudstack Compute cloud account. This information is valuable if you are also seeking to provision a data disk alongside your root volume when instantiating a server with the <tt>knife cloudstack server create</tt> subcommand.</p>
+
+<p>= LICENSE:</p>
+
+<p>Author:: Chirag Jog (<a href="&#x6d;&#x61;&#105;&#x6c;&#116;&#111;&#58;&#x63;&#x68;&#x69;&#x72;&#97;&#103;&#x40;&#99;&#x6c;&#111;&#x67;&#101;&#x6e;&#x79;&#46;&#99;&#x6f;&#x6d;">&#x63;&#x68;&#x69;&#x72;&#97;&#103;&#x40;&#x63;&#x6c;&#x6f;&#x67;&#101;&#110;&#121;&#46;&#99;&#111;&#x6d;</a>), Jeff Moody (<a href="&#x6d;&#97;&#x69;&#x6c;&#x74;&#x6f;&#x3a;&#x6a;&#109;&#111;&#111;&#x64;&#x79;&#64;&#100;&#x61;&#116;&#97;&#x70;&#105;&#112;&#x65;&#x2e;&#x63;&#x6f;&#x6d;">&#106;&#x6d;&#111;&#x6f;&#100;&#121;&#x40;&#100;&#97;&#x74;&#97;&#x70;&#105;&#x70;&#x65;&#46;&#99;&#111;&#x6d;</a>), dfuentes77, Takashi Kanai (<a href="&#x6d;&#x61;&#x69;&#x6c;&#116;&#x6f;&#x3a;&#97;&#110;&#105;&#x6b;&#117;&#x6e;&#100;&#x65;&#x73;&#x75;&#64;&#103;&#x6d;&#97;&#x69;&#x6c;&#x2e;&#x63;&#x6f;&#109;">&#97;&#x6e;&#105;&#x6b;&#x75;&#x6e;&#100;&#x65;&#115;&#117;&#x40;&#x67;&#109;&#x61;&#105;&#108;&#46;&#x63;&#x6f;&#109;</a>)
+Copyright:: Copyright (c) 2011 Clogeny, 2012 Datapipe, 2012 IDC Frontier Inc.
+License:: Apache License, Version 2.0</p>
+
+<p>Licensed under the Apache License, Version 2.0 (the &#8220;License&#8221;);
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at</p>
+
+<pre><code>http://www.apache.org/licenses/LICENSE-2.0
+</code></pre>
+
+<p>Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an &#8220;AS IS&#8221; BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.</p>
+
+  
+    <footer>
+      
+      
+        <div class="sharing">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://anikundesu.github.com/knife-cloudstack-fog/readme/readme.html" data-via="" data-counturl="http://anikundesu.github.com/knife-cloudstack-fog/readme/readme.html" >Tweet</a>
+  
+  
+  
+    <div class="fb-like" data-send="true" data-width="450" data-show-faces="false"></div>
+  
+</div>
+
+      
+    </footer>
+  
+</article>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/knife-cloudstack-fog/blog/2012/09/27/firstpage/">プロジェクトページを開設しました。</a>
+      </li>
+    
+  </ul>
+</section>
+
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2012 - @anikundesu -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+
+
+<div id="fb-root"></div>
+<script>(function(d, s, id) {
+  var js, fjs = d.getElementsByTagName(s)[0];
+  if (d.getElementById(id)) {return;}
+  js = d.createElement(s); js.id = id;
+  js.src = "//connect.facebook.net/en_US/all.js#appId=212934732101925&xfbml=1";
+  fjs.parentNode.insertBefore(js, fjs);
+}(document, 'script', 'facebook-jssdk'));</script>
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

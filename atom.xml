@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Knife-CloudStack-fog Project Page]]></title>
+  <link href="http://anikundesu.github.com/knife-cloudstack-fog/atom.xml" rel="self"/>
+  <link href="http://anikundesu.github.com/knife-cloudstack-fog/"/>
+  <updated>2012-09-27T04:12:33+09:00</updated>
+  <id>http://anikundesu.github.com/knife-cloudstack-fog/</id>
+  <author>
+    <name><![CDATA[@anikundesu]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[プロジェクトページを開設しました。]]></title>
+    <link href="http://anikundesu.github.com/knife-cloudstack-fog/blog/2012/09/27/firstpage/"/>
+    <updated>2012-09-27T03:40:00+09:00</updated>
+    <id>http://anikundesu.github.com/knife-cloudstack-fog/blog/2012/09/27/firstpage</id>
+    <content type="html"><![CDATA[<p>Chefのknifeツール拡張であるknife-cloudstack-fogのプロジェクトページを開設しました。今後、使い方などに関する説明を書いていく予定です。</p>
+]]></content>
+  </entry>
+  
+</feed>
