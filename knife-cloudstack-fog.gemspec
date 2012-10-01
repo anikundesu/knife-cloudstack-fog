@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 $:.push File.expand_path("../lib", __FILE__)
-require "knife-cloudstack/version"
+require "knife-cloudstack-fog/version"
 
 Gem::Specification.new do |s|
   s.name        = "knife-cloudstack-fog"
@@ -16,5 +16,5 @@ Gem::Specification.new do |s|
   s.files = Dir['lib/**/*.rb']
   s.require_paths = ["lib"]
 
-  s.add_dependency "fog", "~> 1.5.0"
+  s.add_dependency "fog", "~> 1.6.0"
 end
