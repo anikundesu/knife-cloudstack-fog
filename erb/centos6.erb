@@ -1,0 +1,42 @@
+bash -c '
+<%= "export http_proxy=\"#{knife_config[:bootstrap_proxy]}\"" if knife_config[:bootstrap_proxy] -%>
+
+if [ ! -f /usr/bin/chef-client ]; then
+  rpm -Uvh http://rbel.frameos.org/rbel6
+  wget http://ftp.riken.jp/Linux/fedora/epel/RPM-GPG-KEY-EPEL-6
+  rpm --import RPM-GPG-KEY-EPEL-6
+  rm -f RPM-GPG-KEY-EPEL-6
+  cat > /etc/yum.repos.d/epel.repo <<EOF
+[epel]
+name=EPEL RPM Repository for Red Hat Enterprise Linux
+mirrorlist=https://mirrors.fedoraproject.org/metalink?repo=epel-6&arch=\$basearch
+gpgcheck=1
+enabled=0
+EOF
+
+  yum install -y rubygem-chef ruby-devel libxml2-devel libxslt-devel wget --enablerepo=epel,rbel6
+fi
+
+mkdir -p /etc/chef
+
+(
+cat <<'EOP'
+<%= validation_key %>
+EOP
+) > /tmp/validation.pem
+awk NF /tmp/validation.pem > /etc/chef/validation.pem
+rm /tmp/validation.pem
+
+(
+cat <<'EOP'
+<%= config_content %>
+EOP
+) > /etc/chef/client.rb
+
+(
+cat <<'EOP'
+<%= { "run_list" => @run_list }.to_json %>
+EOP
+) > /etc/chef/first-boot.json
+
+<%= start_chef %>'

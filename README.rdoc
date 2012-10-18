@@ -71,6 +71,14 @@ Outputs a list of all available service offerings (available hardware configurat
 
 Outputs a list of all available templates available to the currently configured Cloudstack Compute cloud account.  A template is a collection of files used to create or rebuild a server. This data can be useful when choosing an template ID to pass to the <tt>knife cloudstack server create</tt> subcommand.
 
+== knife cloudstack keypair create
+
+Create a new SSH keypair or register a public key to the currently configured Cloudstack Compute cloud account. This command is valuable to provide password recovery options as well as associating a Cloudstack keypair with an instance for any advanced authentication methods when instantiating a server with the <tt>knife cloudstack server create</tt> subcommand.
+
+== knife cloudstack keypair delete
+
+Delete a keypair which is abailable to the currently configured Cloudstack Compute cloud account.
+
 == knife cloudstack keypair list
 
 Outputs a list of all available keypairs available to the currently configured Cloudstack Compute cloud account. This information is valuable to provide password recovery options as well as associating a Cloudstack keypair with an instance for any advanced authentication methods when instantiating a server with the <tt>knife cloudstack server create</tt> subcommand.
@@ -78,6 +86,18 @@ Outputs a list of all available keypairs available to the currently configured C
 == knife cloudstack networks list
 
 Outputs a list of all available network offerings available to the currently configured Cloudstack Compute cloud account. This information is necessary to locate a network ID when instantiating a server with the <tt>knife cloudstack server create</tt> subcommand if your Cloudstack Compute cloud requires a server be associated with a particular network offering.
+
+== knife cloudstack portforwardingrule list
+
+Outputs a list of all port forwarding rules. 
+
+== knife cloudstack publicip create
+
+Assign a new public ip address to the zone specified by -z option. This sub command is available only on advanced network (VLAN enabled) zone.
+
+== knife cloudstack publicip list
+
+Outputs a list of all public ip addresses assigned to the account. This sub command is available only on advanced network (VLAN enabled) zone.
 
 == knife cloudstack securitygroup list
 
@@ -95,7 +115,7 @@ Outputs a list of all available disk offerings available to the currently config
 = LICENSE:
 
 Author:: Chirag Jog (<chirag@clogeny.com>), Jeff Moody (<jmoody@datapipe.com>), dfuentes77, Takashi Kanai (<anikundesu@gmail.com>)
-Copyright:: Copyright (c) 2011 Clogeny, 2012 Datapipe
+Copyright:: Copyright (c) 2011 Clogeny, 2012 Datapipe, 2012 IDC Frontier Inc.
 License:: Apache License, Version 2.0
 
 Licensed under the Apache License, Version 2.0 (the "License");

@@ -131,7 +131,7 @@ class Chef
         bootstrap.config[:run_list] = config[:run_list]
         bootstrap.config[:ssh_user] = user
         bootstrap.config[:ssh_password] = password
-        bootstrap.config[:identity_file] = config[:identity_file]
+        bootstrap.config[:identity_file] = locate_config_value(:identity_file)
         bootstrap.config[:chef_node_name] = config[:server_name] if config[:server_name]
         bootstrap.config[:prerelease] = config[:prerelease]
         bootstrap.config[:bootstrap_version] = locate_config_value(:bootstrap_version)
