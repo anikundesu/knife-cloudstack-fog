@@ -34,6 +34,14 @@ class Chef
              :long => "--state STATE",
              :description => "Limit responses to servers only of a given state. Possible values are 'running,' 'stopped,' 'starting,' 'pending,' 'shutting-down,' 'terminated,' and 'stopping.' Default provides servers in all states.",
              :default => "all"
+=begin
+    #Commented out as sorting of VM list is a work-in-progress             
+      option :sort,
+             :short => "-o TRUE/FALSE",
+             :long => "--sort TRUE/FALSE",
+             :description => "Enable or disable sorting by Zone ID then VM ID. Defaults to sorted.",
+             :default => true
+=end
              
       def print_servers(server_list,servers,options={})
         server = servers
@@ -44,6 +52,17 @@ class Chef
           state.downcase!
           server.reject!{|t| t['state'].downcase != state}
         end
+        
+=begin
+    #Commented out as sorting of VM list is a work-in-progress
+        # Sorting to group by zone ID first, then VM ID
+        if vmsort = options[:sort]
+          sort1 = server.sort_by { |hsh| hsh["zoneid"] }
+          sorted = sort1.sort_by { |hsh| hsh["id"] }
+        else
+          sorted = server
+        end
+=end
         
         server.each do |instance|
           server_list << instance['name'].to_s
@@ -98,7 +117,8 @@ class Chef
         
         zoneid = locate_config_value(:zoneid)
         state = locate_config_value(:state)
-        
+        # vmsort = locate_config_value(:sort)
+                
         response = connection.list_virtual_machines['listvirtualmachinesresponse']
         if virtual_machines = response['virtualmachine']
           filters = {}

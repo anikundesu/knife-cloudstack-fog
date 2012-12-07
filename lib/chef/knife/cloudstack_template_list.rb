@@ -68,7 +68,12 @@ class Chef
           temp.reject!{|t| t['hypervisor'] != hypervisor}
         end
         
-        temp.each do |template|
+        # Sorting to group by zone ID first, then ID
+        
+        sort1 = temp.sort_by { |hsh| hsh["id"] }
+        sorted = sort1.sort_by { |hsh| hsh["zoneid"] }
+
+        sorted.each do |template|
           template_list << template['id'].to_s
           template['hypervisor'] = ' ' if template['hypervisor'].nil?
           template_list << template['hypervisor']
@@ -78,6 +83,7 @@ class Chef
           template_list << template_size.to_s
 
           template_list << template['zonename']
+          template_list << template['zoneid'].to_s
           template_list << template['name']
         end
       end
@@ -89,7 +95,8 @@ class Chef
           ui.color('ID', :bold),
           ui.color('Hypervisor', :bold),
           ui.color('Size (in GB)', :bold),
-          ui.color('Zone Location', :bold),
+          ui.color('Zone Name', :bold),
+          ui.color('Zone ID', :bold),
           ui.color('Name', :bold)          
         ]
         
@@ -110,7 +117,7 @@ class Chef
             
             print_templates(template_list,templates,filters)
           end
-          puts ui.list(template_list, :uneven_columns_across, 5)
+          puts ui.list(template_list, :uneven_columns_across, 6)
         end
         
       end

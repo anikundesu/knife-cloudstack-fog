@@ -16,7 +16,7 @@ Gem::Specification.new do |s|
   s.files = Dir['lib/**/*.rb']
   s.require_paths = ["lib"]
 
-  s.add_dependency "fog", "~> 1.6.0"
+  s.add_dependency "fog", "~> 1.8.0"
   s.add_dependency "chef", ">= 10.12.0"
 
 end
