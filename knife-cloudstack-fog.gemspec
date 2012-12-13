@@ -12,7 +12,7 @@ Gem::Specification.new do |s|
   s.email       = ["chirag@clogeny.com", "jmoody@datapipe.com", "", "anikundesu@gmail.com"]
   s.homepage    = "https://github.com/fifthecho/knife-cloudstack-fog"
   s.summary     = %q{Cloudstack Compute Support for Chef's Knife Command}
-  s.description = %q{Support for the Chef Knife command, leveraging FOG, for the Citrix CloudStack API}
+  s.description = %q{Support for the Chef Knife command, leveraging FOG, for the Apache CloudStack API / Citrix CloudPlatform}
   s.files = Dir['lib/**/*.rb']
   s.require_paths = ["lib"]
 
