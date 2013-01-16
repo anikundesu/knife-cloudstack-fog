@@ -24,12 +24,12 @@ class Chef
 
       include Knife::CloudstackBase
 
-      banner "knife cloudstack keypair create (options)"
+      banner "knife cloudstack keypair create -k NAME (options)"
 
       option  :name,
               :short => "-k KEYPAIR",
               :long => "--keypair KEYPAIR",
-              :description => "The Name of Key Pair to create."
+              :description => "The name of the Key Pair to create."
 
       option  :publickey,
               :short => "-p publickey",
