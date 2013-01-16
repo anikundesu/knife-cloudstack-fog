@@ -23,7 +23,7 @@ class Chef
     class CloudstackServerDelete < Knife
 
       include Knife::CloudstackBase
-      banner "knife cloudstack server delete INSTANCE_ID [INSTANCE_ID] (options)"
+      banner "knife cloudstack server delete INSTANCE_ID"
       
       def run
         

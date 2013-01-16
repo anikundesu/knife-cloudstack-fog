@@ -23,7 +23,7 @@ class Chef
     class CloudstackServerStop < Knife
 
       include Knife::CloudstackBase
-      banner "knife cloudstack server stop INSTANCE_ID [INSTANCE_ID] (options)"
+      banner "knife cloudstack server stop INSTANCE_ID (options)"
       option  :forced,
               :short => "-f",
               :description => "Issue this as a forced stop command."

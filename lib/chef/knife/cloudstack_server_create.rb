@@ -230,62 +230,73 @@ class Chef
         jobid = server['deployvirtualmachineresponse'].fetch('jobid')
 
         server_start = connection.query_async_job_result('jobid'=>jobid)
+
+        Chef::Log.debug("Job ID: #{jobid} \n")
+
         print "#{ui.color("Waiting for server", :magenta)}"
-        while server_start['queryasyncjobresultresponse'].fetch('jobstatus') != 1
+        while server_start['queryasyncjobresultresponse'].fetch('jobstatus') == 0
           print "#{ui.color(".", :magenta)}"
           sleep(15)
           server_start = connection.query_async_job_result('jobid'=>jobid)
+          Chef::Log.debug("Server_Start: #{server_start} \n")
         end
         puts "\n\n"
 
-        Chef::Log.debug("Job ID: #{jobid} \n")
-        Chef::Log.debug("Options: #{options} \n")
-        server_start = connection.query_async_job_result('jobid'=>jobid)
-        Chef::Log.debug("Server_Start: #{server_start} \n")
-        
-        server_info = server_start['queryasyncjobresultresponse']['jobresult']['virtualmachine']
-        
-        server_name = server_info['displayname']
-        server_id = server_info['hostname']
-        server_serviceoffering = server_info['serviceofferingname']
-        server_template = server_info['templatename']
-        if server_info['password'] != nil
-          ssh_password = server_info['password']
-        else
-          ssh_password = locate_config_value(:ssh_password)
+        if server_start['queryasyncjobresultresponse'].fetch('jobstatus') == 2
+          errortext = server_start['queryasyncjobresultresponse'].fetch('jobresult').fetch('errortext')
+          puts "#{ui.color("ERROR! Job failed with #{errortext}", :red)}"
         end
-        
-        ssh_user = locate_config_value(:ssh_user)
-        
-        public_ip = nil
-        
-        if server_info['nic'].size > 0
-          public_ip = server_info['nic'].first['ipaddress']
+
+        if server_start['queryasyncjobresultresponse'].fetch('jobstatus') == 1 
+
+          Chef::Log.debug("Job ID: #{jobid} \n")
+          Chef::Log.debug("Options: #{options} \n")
+          server_start = connection.query_async_job_result('jobid'=>jobid)
+          Chef::Log.debug("Server_Start: #{server_start} \n")
+          
+          server_info = server_start['queryasyncjobresultresponse']['jobresult']['virtualmachine']
+          
+          server_name = server_info['displayname']
+          server_id = server_info['hostname']
+          server_serviceoffering = server_info['serviceofferingname']
+          server_template = server_info['templatename']
+          if server_info['password'] != nil
+            ssh_password = server_info['password']
+          else
+            ssh_password = locate_config_value(:ssh_password)
+          end
+          
+          ssh_user = locate_config_value(:ssh_user)
+          
+          public_ip = nil
+          
+          if server_info['nic'].size > 0
+            public_ip = server_info['nic'].first['ipaddress']
+          end
+          
+          puts "\n\n"
+          puts "#{ui.color("Name", :cyan)}: #{server_name}"
+          puts "#{ui.color("Public IP", :cyan)}: #{public_ip}"
+          puts "#{ui.color("Username", :cyan)}: #{ssh_user}"
+          puts "#{ui.color("Password", :cyan)}: #{ssh_password}"
+          
+          print "\n#{ui.color("Waiting for sshd", :magenta)}"
+          
+          print("#{ui.color(".", :magenta)}") until tcp_test_ssh(public_ip) { sleep @initial_sleep_delay ||= 10; puts("done") }
+          
+          bootstrap_for_node(public_ip, ssh_user, ssh_password).run
+          
+          puts "\n"
+          puts "#{ui.color("Instance Name", :green)}: #{server_name}"
+          puts "#{ui.color("Instance ID", :green)}: #{server_id}"
+          puts "#{ui.color("Service Offering", :green)}: #{server_serviceoffering}"
+          puts "#{ui.color("Template", :green)}: #{server_template}"
+          puts "#{ui.color("Public IP Address", :green)}: #{public_ip}"
+          puts "#{ui.color("User", :green)}: #{ssh_user}"
+          puts "#{ui.color("Password", :green)}: #{ssh_password}"
+          puts "#{ui.color("Environment", :green)}: #{config[:environment] || '_default'}"
+          puts "#{ui.color("Run List", :green)}: #{config[:run_list].join(', ')}" 
         end
-        
-        puts "\n\n"
-        puts "#{ui.color("Name", :cyan)}: #{server_name}"
-        puts "#{ui.color("Public IP", :cyan)}: #{public_ip}"
-        puts "#{ui.color("Username", :cyan)}: #{ssh_user}"
-        puts "#{ui.color("Password", :cyan)}: #{ssh_password}"
-        
-        print "\n#{ui.color("Waiting for sshd", :magenta)}"
-        
-        print("#{ui.color(".", :magenta)}") until tcp_test_ssh(public_ip) { sleep @initial_sleep_delay ||= 10; puts("done") }
-        
-        bootstrap_for_node(public_ip, ssh_user, ssh_password).run
-        
-        puts "\n"
-        puts "#{ui.color("Instance Name", :green)}: #{server_name}"
-        puts "#{ui.color("Instance ID", :green)}: #{server_id}"
-        puts "#{ui.color("Service Offering", :green)}: #{server_serviceoffering}"
-        puts "#{ui.color("Template", :green)}: #{server_template}"
-        puts "#{ui.color("Public IP Address", :green)}: #{public_ip}"
-        puts "#{ui.color("User", :green)}: #{ssh_user}"
-        puts "#{ui.color("Password", :green)}: #{ssh_password}"
-        puts "#{ui.color("Environment", :green)}: #{config[:environment] || '_default'}"
-        puts "#{ui.color("Run List", :green)}: #{config[:run_list].join(', ')}" 
- 
  
       end
       

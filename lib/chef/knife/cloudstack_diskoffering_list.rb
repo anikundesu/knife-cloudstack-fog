@@ -24,7 +24,7 @@ class Chef
 
       include Knife::CloudstackBase
 
-      banner "knife cloudstack diskoffering list (options)"
+      banner "knife cloudstack diskoffering list"
             
       def run
         $stdout.sync = true

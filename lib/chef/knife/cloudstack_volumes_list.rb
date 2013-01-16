@@ -24,7 +24,7 @@ class Chef
 
       include Knife::CloudstackBase
 
-      banner "knife cloudstack volume list (options)"
+      banner "knife cloudstack volume list"
             
       def run
         $stdout.sync = true

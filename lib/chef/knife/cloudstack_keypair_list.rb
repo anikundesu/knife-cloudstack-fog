@@ -24,7 +24,7 @@ class Chef
 
       include Knife::CloudstackBase
 
-      banner "knife cloudstack keypair list (options)"
+      banner "knife cloudstack keypair list"
             
       def run
         $stdout.sync = true

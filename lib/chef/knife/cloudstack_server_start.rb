@@ -23,7 +23,7 @@ class Chef
     class CloudstackServerStart < Knife
 
       include Knife::CloudstackBase
-      banner "knife cloudstack server start INSTANCE_ID [INSTANCE_ID] (options)"
+      banner "knife cloudstack server start INSTANCE_ID"
       
       def run
         
@@ -36,10 +36,10 @@ class Chef
           instance_name = response['listvirtualmachinesresponse']['virtualmachine'].first['name']
           instance_ip = response['listvirtualmachinesresponse']['virtualmachine'].first['nic'].first['ipaddress']
           real_instance_id = response['listvirtualmachinesresponse']['virtualmachine'].first['id']
-          puts "#{ui.color("Name", :red)}: #{instance_name}"
-          puts "#{ui.color("Public IP", :red)}: #{instance_ip}"
+          puts "#{ui.color("Name", :green)}: #{instance_name}"
+          puts "#{ui.color("Public IP", :green)}: #{instance_ip}"
           puts "\n"
-          confirm("#{ui.color("Do you really want to start this server", :red)}")
+          confirm("#{ui.color("Do you really want to start this server", :green)}")
           
           
           if :force
