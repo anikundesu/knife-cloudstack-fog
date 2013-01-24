@@ -145,6 +145,7 @@ class Chef
       end
       
       def tcp_test_ssh(hostname)
+        print("#{ui.color(".", :magenta)}")
         tcp_socket = TCPSocket.new(hostname, 22)
         readable = IO.select([tcp_socket], nil, nil, 5)
         if readable
@@ -257,7 +258,7 @@ class Chef
           server_info = server_start['queryasyncjobresultresponse']['jobresult']['virtualmachine']
           
           server_name = server_info['displayname']
-          server_id = server_info['hostname']
+          server_id = server_info['name']
           server_serviceoffering = server_info['serviceofferingname']
           server_template = server_info['templatename']
           if server_info['password'] != nil
@@ -283,8 +284,13 @@ class Chef
           print "\n#{ui.color("Waiting for sshd", :magenta)}"
           
           print("#{ui.color(".", :magenta)}") until tcp_test_ssh(public_ip) { sleep @initial_sleep_delay ||= 10; puts("done") }
+
+          puts("#{ui.color("Waiting for password/keys to sync.", :magenta)}")
+          sleep 15
           
           bootstrap_for_node(public_ip, ssh_user, ssh_password).run
+
+          Chef::Log.debug("#{server_info}")
           
           puts "\n"
           puts "#{ui.color("Instance Name", :green)}: #{server_name}"
