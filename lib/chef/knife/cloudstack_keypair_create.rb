@@ -92,7 +92,7 @@ class Chef
             puts ui.list(sshkeypair_list, :columns_across, 3)
           end
         else
-          puts 'Error. Missing -k option.'
+          puts 'Error. Missing Keypair Name (-k) option.'
         end
 
       end

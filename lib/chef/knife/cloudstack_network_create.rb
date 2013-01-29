@@ -24,27 +24,22 @@ class Chef
 
       include Knife::CloudstackBase
 
-      banner "knife cloudstack network create -n NAME -o SERVICEOFFERINGID -z ZONE (options)"
+      banner "knife cloudstack network create -n NAME -o NETWORKOFFERINGID -z ZONE (options)"
 
       option  :name,
               :short => "-n NAME",
               :long => "--name NAME",
               :description => "The name of the network to create."
 
-      option  :serviceoffering,
-              :short => "-o SERVICEOFFERINGID",
-              :long => "--serviceoffering SERVICEOFFERINGID",
+      option  :networkoffering,
+              :short => "-o NETWORKOFFERINGID",
+              :long => "--networkoffering NETWORKOFFERINGID",
               :description => "The network service offering ID to use."
 
       option  :zone,
               :short => "-z ZONE",
               :long => "--zone ZONE",
               :description => "The zone to create the network in."
-
-      option  :isdefault,
-              :short => "-d DEFAULT",
-              :long => "--default DEFAULT",
-              :description => "Do we make this network a default or not? Boolean value."
 
       option  :startip,
               :short => "-s STARTIP",
@@ -61,13 +56,89 @@ class Chef
               :long => "--netmask NETMASK",
               :description => "The netmask for the network."
 
+      option  :gateway,
+              :short => "-g GATEWAY",
+              :long => "--gateway GATEWAY",
+              :description => "The gateway for the network."
+
+      option  :vlan,
+              :short => "-l VLANID",
+              :long => "--vlan VLANID",
+              :description => "The VLAN for the network."
+
+      option :displaytext,
+             :short => "-i DISPLAYTEXT",
+             :long => "--displaytext DISPLAYTEXT",
+             :description => "The display name of the network, if different than the name."
+
 
       def run
         $stdout.sync = true
 
         validate!
 
-        puts "TODO"
+        netoptions = {}
+
+          if (locate_config_value(:name).nil? || locate_config_value(:networkoffering).nil? || locate_config_value(:zone).nil?)
+            puts "Name (-n), Service Offering ID (-o), and Zone ID (-z) are required."
+          else
+            netoptions['name'] = locate_config_value(:name)
+            netoptions['networkofferingid'] = locate_config_value(:networkoffering)
+            netoptions['zoneid'] = locate_config_value(:zone)
+
+            if locate_config_value(:startip) != nil
+              netoptions['startip'] = locate_config_value(:startip)
+            end
+
+            if locate_config_value(:endip) != nil
+              netoptions['endip'] = locate_config_value(:endip)
+            end
+
+            if locate_config_value(:netmask) != nil
+              netoptions['netmask'] = locate_config_value(:netmask)
+            end
+
+            if locate_config_value(:gateway) != nil
+              netoptions['gateway'] = locate_config_value(:gateway)
+            end
+
+            if locate_config_value(:vlan) != nil
+              netoptions['vlan'] = locate_config_value(:vlan)
+            end
+
+            if locate_config_value(:displaytext) != nil
+              netoptions['displaytext'] = locate_config_value(:displaytext)
+            else
+              netoptions['displaytext'] = locate_config_value(:name)
+            end
+
+            Chef::Log.debug("Options: #{netoptions}")
+
+            response = connection.create_network(netoptions)
+
+            Chef::Log.debug("API Response: #{response}")
+
+            network_list = [
+              ui.color('ID', :bold),
+              ui.color('Name', :bold),
+              ui.color('Display Text', :bold),
+              ui.color('Zone ID', :bold),
+              ui.color('VLAN', :bold),
+              ui.color('State', :bold)
+            ]
+
+            newnetwork = response['createnetworkresponse']['network']
+
+            network_list << newnetwork['id'].to_s
+            network_list << newnetwork['name'].to_s
+            network_list << newnetwork['displaytext'].to_s
+            network_list << newnetwork['zoneid'].to_s
+            network_list << newnetwork['vlan'].to_s
+            network_list << newnetwork['state'].to_s
+
+            puts ui.list(network_list, :columns_across, 6)
+
+          end
 
       end
 
