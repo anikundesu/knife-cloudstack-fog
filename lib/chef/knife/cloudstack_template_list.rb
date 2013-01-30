@@ -56,10 +56,10 @@ class Chef
         temp = templates
 
         if templateid = options[:templateid]
-          temp.reject!{|t| t['id'] != templateid.to_i}
+          temp.reject!{|t| t['id'] != templateid}
         end
         if zoneid = options[:zoneid]
-          temp.reject!{|t| t['zoneid'] != zoneid.to_i}
+          temp.reject!{|t| t['zoneid'] != zoneid}
         end
         if zone = options[:zone]
           temp.reject!{|t| t['zonename'] != zone}
@@ -108,6 +108,7 @@ class Chef
                 
         settings = connection.list_templates('templatefilter' => filter)
         if response = settings['listtemplatesresponse']
+          Chef::Log.debug("Response: #{response}")
           if templates = response['template']
             filters = {}
             filters[:hypervisor] = hypervisor unless hypervisor == 'all'
