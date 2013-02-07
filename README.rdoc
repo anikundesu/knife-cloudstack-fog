@@ -121,7 +121,7 @@ Creates networks to be used by the knife cloudstack server create command in zon
 
 = LICENSE:
 
-Author:: Chirag Jog (<chirag@clogeny.com>), Jeff Moody (<jmoody@datapipe.com>), dfuentes77, Takashi Kanai (<anikundesu@gmail.com>)
+Author:: Chirag Jog (<chirag@clogeny.com>), Jeff Moody (<jmoody@datapipe.com>), Damien Fuentes, Takashi Kanai (<anikundesu@gmail.com>)
 Copyright:: Copyright (c) 2011 Clogeny, 2012 Datapipe, 2012 IDC Frontier Inc.
 License:: Apache License, Version 2.0
 
