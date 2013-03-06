@@ -121,6 +121,7 @@ class Chef
         # vmsort = locate_config_value(:sort)
                 
         response = connection.list_virtual_machines['listvirtualmachinesresponse']
+        Chef::Log.debug("API request: #{response}")
         if virtual_machines = response['virtualmachine']
           filters = {}
           filters[:zoneid] = zoneid unless zoneid == 'all'
