@@ -104,13 +104,13 @@ class Chef
                       
       option  :server_name,
               :short => "-N NAME",
-              :long => "--server-name NAME",
-              :description => "The server name"
+              :long => "--display-name NAME",
+              :description => "The instance display name"
       
       option  :host_name,
               :short => "-H NAME",
               :long => "--hostname NAME",
-              :description => "The hostname"
+              :description => "The instance host name"
       
       option  :keypair,
               :short => "-k KEYPAIR",
