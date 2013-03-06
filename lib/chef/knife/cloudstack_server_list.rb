@@ -45,8 +45,9 @@ class Chef
              
       def print_servers(server_list,servers,options={})
         server = servers
+        Chef::Log.debug("Servers: #{server}")
         if zoneid = options[:zoneid]
-          server.reject!{|t| t['zoneid'] != zoneid.to_i}
+          server.reject!{|t| t['zoneid'] != zoneid}
         end
         if state = options[:state]
           state.downcase!
