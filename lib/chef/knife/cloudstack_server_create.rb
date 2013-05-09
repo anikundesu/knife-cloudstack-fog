@@ -121,6 +121,10 @@ class Chef
               :short => "-D DISKOFFERINGID",
               :long => "--diskoffering DISKOFFERINGID",
               :description => "Specifies either the Disk Offering ID for the ROOT disk for an ISO template, or a DATA disk."
+
+      option  :size,
+              :long => "--size SIZE",
+              :description => "Specifies disk size."
         
       def bootstrap_for_node(host, user, password)
         Chef::Log.debug("Bootstrap host: #{host}")
@@ -223,6 +227,10 @@ class Chef
         
         if locate_config_value(:diskoffering) != nil
           options['diskofferingid'] = locate_config_value(:diskoffering)
+        end
+        
+        if locate_config_value(:size) != nil
+          options['size'] = locate_config_value(:size)
         end
         
         Chef::Log.debug("Options: #{options} \n")
