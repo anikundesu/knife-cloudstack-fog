@@ -8,8 +8,8 @@ Gem::Specification.new do |s|
   s.platform    = Gem::Platform::RUBY
   s.has_rdoc = true
   s.extra_rdoc_files = ["README.rdoc", "LICENSE" ]
-  s.authors     = ["Chirag Jog (chiragjog)", "Jeff Moody (fifthecho)", "Damien Fuentes (dfuentes77)", "Takashi Kanai (anikundesu)"]
-  s.email       = ["chirag@clogeny.com", "jmoody@datapipe.com", "", "anikundesu@gmail.com"]
+  s.authors     = ["Chirag Jog (chiragjog)", "Jeff Moody (fifthecho)", "Damien Fuentes (dfuentes77)", "Takashi Kanai (anikundesu)", "Kazuhiro Suzuki (ksauzz)"]
+  s.email       = ["chirag@clogeny.com", "jmoody@datapipe.com", "", "anikundesu@gmail.com", "ksauzzmsg@gmail.com"]
   s.homepage    = "https://github.com/fifthecho/knife-cloudstack-fog"
   s.summary     = %q{Cloudstack Compute Support for Chef's Knife Command}
   s.description = %q{Support for the Chef Knife command, leveraging FOG, for the Apache CloudStack / Citrix CloudPlatform API}

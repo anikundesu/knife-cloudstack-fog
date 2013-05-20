@@ -123,8 +123,9 @@ class Chef
               :description => "Specifies either the Disk Offering ID for the ROOT disk for an ISO template, or a DATA disk."
 
       option  :size,
+              :short => "-Z SIZE",
               :long => "--size SIZE",
-              :description => "Specifies disk size."
+              :description => "Specifies the arbitrary Disk Size for DATADISK volume in GB. Must be passed with custom size Disk Offering ID."
         
       def bootstrap_for_node(host, user, password)
         Chef::Log.debug("Bootstrap host: #{host}")
