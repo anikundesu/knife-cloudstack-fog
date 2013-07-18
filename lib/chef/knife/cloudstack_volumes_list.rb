@@ -25,7 +25,7 @@ class Chef
       include Knife::CloudstackBase
 
       banner "knife cloudstack volume list"
-            
+
       def run
         $stdout.sync = true
 
@@ -39,9 +39,9 @@ class Chef
           ui.color('Virtual Machine', :bold),
           ui.color('State', :bold)
         ]
-        
+
         response = connection.list_volumes['listvolumesresponse']
-        
+
         if volumes = response['volume']
           volumes.each do |volume|
             volume_list << volume['id'].to_s
@@ -55,7 +55,7 @@ class Chef
             else
               volume_list << volume['vmdisplayname']
             end
-            
+
             volume_list << begin
               state = volume['state'].to_s.downcase
               case state
@@ -72,7 +72,7 @@ class Chef
         end
 
       end
-        
+
     end
   end
 end

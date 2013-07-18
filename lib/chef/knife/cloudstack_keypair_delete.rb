@@ -28,8 +28,8 @@ class Chef
 
 
       def run
-        if @name_args.nil?
-          puts #{ui.color("Please provide a keypair name.", :red)}
+        if @name_args.nil? || @name_args.empty?
+          puts "#{ui.color("Please provide a keypair name.", :red)}"
         end
 
         @name_args.each do |keypair_name|

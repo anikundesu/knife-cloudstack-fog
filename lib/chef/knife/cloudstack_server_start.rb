@@ -24,11 +24,11 @@ class Chef
 
       include Knife::CloudstackBase
       banner "knife cloudstack server start INSTANCE_ID"
-      
+
       def run
-        
-        if @name_args.nil?
-          puts #{ui.color("Please provide an Instance ID.", :red)}
+
+        if @name_args.nil? || @name_args.empty?
+          puts "#{ui.color("Please provide an Instance ID.", :red)}"
         end
 
         @name_args.each do |instance_id|
@@ -40,9 +40,9 @@ class Chef
           puts "#{ui.color("Public IP", :green)}: #{instance_ip}"
           puts "\n"
           confirm("#{ui.color("Do you really want to start this server", :green)}")
-          
-          
-          if :force
+
+
+          if locate_config_value(:force)
             server = connection.start_virtual_machine('id' => real_instance_id, 'forced' => true)
           else
             server = connection.start_virtual_machine('id' => real_instance_id)
@@ -56,14 +56,14 @@ class Chef
             server_start = connection.query_async_job_result('jobid'=>jobid)
           end
           puts "\n\n"
-          
+
           ui.warn("Started server #{instance_name}")
         end
       end
-              
 
-      
-      
+
+
+
     end
   end
 end

@@ -25,7 +25,7 @@ class Chef
       include Knife::CloudstackBase
 
       banner "knife cloudstack networkoffering list"
-            
+
       def run
         $stdout.sync = true
 
@@ -43,7 +43,7 @@ class Chef
         response = connection.list_network_offerings['listnetworkofferingsresponse']
 
         if networks = response['networkoffering']
-          
+
           networks.each do |networkoffering|
             # puts networkoffering
             network_list << networkoffering['id'].to_s
@@ -68,7 +68,7 @@ class Chef
         puts ui.list(network_list, :uneven_columns_across, 6)
 
       end
-        
+
     end
   end
 end

@@ -49,7 +49,7 @@ class Chef
           option :cloudstack_api_endpoint,
             :long => "--cloudstack-api-endpoint ENDPOINT",
             :description => "Your Cloudstack API endpoint",
-            :proc => Proc.new { |endpoint| Chef::Config[:knife][:cloudstack_api_endpoint] = endpoint }          
+            :proc => Proc.new { |endpoint| Chef::Config[:knife][:cloudstack_api_endpoint] = endpoint }
         end
       end
 

@@ -25,11 +25,11 @@ require 'chef/knife/cloudstack_base'
 class Chef
   class Knife
     class CloudstackServerCreate < Knife
-      
+
       include Knife::CloudstackBase
-      
+
       banner "knife cloudstack server create -s SERVICEID -t TEMPLATEID -z ZONEID (options)"
-      
+
       option  :cloudstack_serviceid,
               :short => "-s SERVICEID",
               :long => "--serviceid SERVICEID",
@@ -96,27 +96,27 @@ class Chef
               :short => "-P PASSWORD",
               :long => "--ssh-password PASSWORD",
               :description => "The ssh password"
-      
-      option  :identity_file,        
+
+      option  :identity_file,
               :short => "-i PRIVATE_KEY_FILE",
               :long => "--identity-file PRIVATE_KEY_FILE",
               :description => "The Private key file for authenticating SSH session. --keypair option is also needed."
-                      
+
       option  :server_name,
               :short => "-N NAME",
               :long => "--display-name NAME",
               :description => "The instance display name"
-      
+
       option  :host_name,
               :short => "-H NAME",
               :long => "--hostname NAME",
               :description => "The instance host name"
-      
+
       option  :keypair,
               :short => "-k KEYPAIR",
               :long => "--keypair KEYPAIR",
               :description => "The CloudStack Key Pair to use for SSH key authentication."
-              
+
       option  :diskoffering,
               :short => "-D DISKOFFERINGID",
               :long => "--diskoffering DISKOFFERINGID",
@@ -126,7 +126,7 @@ class Chef
               :short => "-Z SIZE",
               :long => "--size SIZE",
               :description => "Specifies the arbitrary Disk Size for DATADISK volume in GB. Must be passed with custom size Disk Offering ID."
-        
+
       def bootstrap_for_node(host, user, password)
         Chef::Log.debug("Bootstrap host: #{host}")
         Chef::Log.debug("Bootstrap user: #{user}")
@@ -148,7 +148,7 @@ class Chef
         bootstrap.config[:no_host_key_verify] = config[:no_host_key_verify]
         bootstrap
       end
-      
+
       def tcp_test_ssh(hostname)
         print("#{ui.color(".", :magenta)}")
         tcp_socket = TCPSocket.new(hostname, 22)
@@ -160,7 +160,7 @@ class Chef
         else
           false
         end
-        
+
         rescue Errno::ETIMEDOUT
           false
         rescue Errno::EPERM
@@ -180,7 +180,7 @@ class Chef
 
       def run
         $stdout.sync = true
-        
+
         options = {}
 
         options['zoneid'] = locate_config_value(:cloudstack_zoneid)
@@ -189,7 +189,7 @@ class Chef
         if locate_config_value(:cloudstack_serviceid) != nil
           options['serviceofferingid'] = locate_config_value(:cloudstack_serviceid)
         end
-        
+
         if locate_config_value(:server_name) != nil
           options['displayname'] = locate_config_value(:server_name)
         end
@@ -197,7 +197,7 @@ class Chef
         if locate_config_value(:host_name) != nil
           options['name'] = locate_config_value(:host_name)
         end
-        
+
         network_ids = []
         if locate_config_value(:cloudstack_networkids) != []
           cs_networkids = locate_config_value(:cloudstack_networkids)
@@ -206,7 +206,7 @@ class Chef
           end
           options['networkids'] = network_ids
         end
-        
+
         security_groups = []
         if locate_config_value(:cloudstack_groupids) != []
           cs_groupids = locate_config_value(:cloudstack_groupids)
@@ -221,19 +221,19 @@ class Chef
           end
           options['securitygroupnames'] = security_groups
         end
-        
+
         if locate_config_value(:keypair) != nil
           options['keypair'] = locate_config_value(:keypair)
         end
-        
+
         if locate_config_value(:diskoffering) != nil
           options['diskofferingid'] = locate_config_value(:diskoffering)
         end
-        
+
         if locate_config_value(:size) != nil
           options['size'] = locate_config_value(:size)
         end
-        
+
         Chef::Log.debug("Options: #{options} \n")
 
         server = connection.deploy_virtual_machine(options)
@@ -257,15 +257,15 @@ class Chef
           puts "#{ui.color("ERROR! Job failed with #{errortext}", :red)}"
         end
 
-        if server_start['queryasyncjobresultresponse'].fetch('jobstatus') == 1 
+        if server_start['queryasyncjobresultresponse'].fetch('jobstatus') == 1
 
           Chef::Log.debug("Job ID: #{jobid} \n")
           Chef::Log.debug("Options: #{options} \n")
           server_start = connection.query_async_job_result('jobid'=>jobid)
           Chef::Log.debug("Server_Start: #{server_start} \n")
-          
+
           server_info = server_start['queryasyncjobresultresponse']['jobresult']['virtualmachine']
-          
+
           server_name = server_info['displayname']
           server_id = server_info['name']
           server_serviceoffering = server_info['serviceofferingname']
@@ -275,32 +275,32 @@ class Chef
           else
             ssh_password = locate_config_value(:ssh_password)
           end
-          
+
           ssh_user = locate_config_value(:ssh_user)
-          
+
           public_ip = nil
-          
+
           if server_info['nic'].size > 0
             public_ip = server_info['nic'].first['ipaddress']
           end
-          
+
           puts "\n\n"
           puts "#{ui.color("Name", :cyan)}: #{server_name}"
           puts "#{ui.color("Public IP", :cyan)}: #{public_ip}"
           puts "#{ui.color("Username", :cyan)}: #{ssh_user}"
           puts "#{ui.color("Password", :cyan)}: #{ssh_password}"
-          
+
           print "\n#{ui.color("Waiting for sshd", :magenta)}"
-          
+
           print("#{ui.color(".", :magenta)}") until tcp_test_ssh(public_ip) { sleep @initial_sleep_delay ||= 10; puts("done") }
 
           puts("#{ui.color("Waiting for password/keys to sync.", :magenta)}")
           sleep 15
-          
+
           bootstrap_for_node(public_ip, ssh_user, ssh_password).run
 
           Chef::Log.debug("#{server_info}")
-          
+
           puts "\n"
           puts "#{ui.color("Instance Name", :green)}: #{server_name}"
           puts "#{ui.color("Instance ID", :green)}: #{server_id}"
@@ -310,11 +310,11 @@ class Chef
           puts "#{ui.color("User", :green)}: #{ssh_user}"
           puts "#{ui.color("Password", :green)}: #{ssh_password}"
           puts "#{ui.color("Environment", :green)}: #{config[:environment] || '_default'}"
-          puts "#{ui.color("Run List", :green)}: #{config[:run_list].join(', ')}" 
+          puts "#{ui.color("Run List", :green)}: #{config[:run_list].join(', ')}"
         end
- 
+
       end
-      
+
     end
   end
 end

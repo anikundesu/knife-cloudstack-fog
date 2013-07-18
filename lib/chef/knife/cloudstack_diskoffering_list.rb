@@ -25,7 +25,7 @@ class Chef
       include Knife::CloudstackBase
 
       banner "knife cloudstack diskoffering list"
-            
+
       def run
         $stdout.sync = true
 
@@ -51,7 +51,7 @@ class Chef
         puts ui.list(diskoffering_list, :columns_across, 4)
 
       end
-        
+
     end
   end
 end

@@ -27,11 +27,11 @@ class Chef
       option  :forced,
               :short => "-f",
               :description => "Issue this as a forced stop command."
-      
+
       def run
-        
-        if @name_args.nil?
-          puts #{ui.color("Please provide an Instance ID.", :red)}
+
+        if @name_args.nil? || @name_args.empty?
+          puts "#{ui.color("Please provide an Instance ID.", :red)}"
         end
 
         @name_args.each do |instance_id|
@@ -43,9 +43,9 @@ class Chef
           puts "#{ui.color("Public IP", :red)}: #{instance_ip}"
           puts "\n"
           confirm("#{ui.color("Do you really want to stop this server", :red)}")
-          
-          
-          if :force
+
+
+          if locate_config_value(:force)
             server = connection.stop_virtual_machine('id' => real_instance_id, 'forced' => true)
           else
             server = connection.stop_virtual_machine('id' => real_instance_id)
@@ -56,17 +56,17 @@ class Chef
           while server_stop['queryasyncjobresultresponse'].fetch('jobstatus') != 1
             print "#{ui.color(".", :magenta)}"
             sleep(1)
-            server_start = connection.query_async_job_result('jobid'=>jobid)
+            server_stop = connection.query_async_job_result('jobid'=>jobid)
           end
           puts "\n\n"
-          
+
           ui.warn("Stopped server #{instance_name}")
         end
       end
-              
 
-      
-      
+
+
+
     end
   end
 end

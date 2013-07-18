@@ -25,7 +25,7 @@ class Chef
       include Knife::CloudstackBase
 
       banner "knife cloudstack network list"
-            
+
       def run
         $stdout.sync = true
 
@@ -61,7 +61,7 @@ class Chef
         puts ui.list(network_list, :columns_across, 5)
 
       end
-        
+
     end
   end
 end
