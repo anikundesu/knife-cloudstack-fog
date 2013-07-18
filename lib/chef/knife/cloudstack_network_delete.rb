@@ -28,13 +28,13 @@ class Chef
 
 
       def run
-        if @name_args.nil?
-          puts #{ui.color("Please provide a network ID.", :red)}
+        if @name_args.nil? || @name_args.empty?
+          puts "#{ui.color("Please provide a network ID.", :red)}"
         end
 
         @name_args.each do |network_id|
           response = connection.list_networks('id' => network_id)
-          
+
           apiresponse = response['listnetworksresponse']
           network = apiresponse['network']
           Chef::Log.debug("Network: #{network}")

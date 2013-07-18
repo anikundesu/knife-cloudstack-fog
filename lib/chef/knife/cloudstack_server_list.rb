@@ -35,14 +35,14 @@ class Chef
              :description => "Limit responses to servers only of a given state. Possible values are 'running,' 'stopped,' 'starting,' 'pending,' 'shutting-down,' 'terminated,' and 'stopping.' Default provides servers in all states.",
              :default => "all"
 =begin
-    #Commented out as sorting of VM list is a work-in-progress             
+    #Commented out as sorting of VM list is a work-in-progress
       option :sort,
              :short => "-o TRUE/FALSE",
              :long => "--sort TRUE/FALSE",
              :description => "Enable or disable sorting by Zone ID then VM ID. Defaults to sorted.",
              :default => true
 =end
-             
+
       def print_servers(server_list,servers,options={})
         server = servers
         Chef::Log.debug("Servers: #{server}")
@@ -53,7 +53,7 @@ class Chef
           state.downcase!
           server.reject!{|t| t['state'].downcase != state}
         end
-        
+
 =begin
     #Commented out as sorting of VM list is a work-in-progress
         # Sorting to group by zone ID first, then VM ID
@@ -64,7 +64,7 @@ class Chef
           sorted = server
         end
 =end
-        
+
         server.each do |instance|
           server_list << instance['name'].to_s
           server_list << instance['displayname'].to_s
@@ -78,12 +78,12 @@ class Chef
             sg_list << group['name'].to_s
           end
           server_list << sg_list.join(", ")
-          
+
           server_list << instance['zonename'].to_s
           server_list << instance['serviceofferingname'].to_s
           server_list << instance['templatedisplaytext'].to_s
           server_list << instance['hypervisor'].to_s
-          
+
           server_list << begin
             state = instance['state'].to_s.downcase
             case state
@@ -96,7 +96,7 @@ class Chef
             end
           end
         end
-        
+
       end
 
       def run
@@ -115,11 +115,11 @@ class Chef
           ui.color('Hypervisor', :bold),
           ui.color('State', :bold)
         ]
-        
+
         zoneid = locate_config_value(:zoneid)
         state = locate_config_value(:state)
         # vmsort = locate_config_value(:sort)
-                
+
         response = connection.list_virtual_machines['listvirtualmachinesresponse']
         Chef::Log.debug("API request: #{response}")
         if virtual_machines = response['virtualmachine']

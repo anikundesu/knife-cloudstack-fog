@@ -25,7 +25,7 @@ class Chef
       include Knife::CloudstackBase
 
       banner "knife cloudstack keypair list"
-            
+
       def run
         $stdout.sync = true
 
@@ -47,7 +47,7 @@ class Chef
         puts ui.list(sshkeypair_list, :columns_across, 3)
 
       end
-        
+
     end
   end
 end

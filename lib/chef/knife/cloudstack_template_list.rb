@@ -49,9 +49,9 @@ class Chef
               :short => "-T TEMPLATEID",
               :long => "--templateid TEMPLATEID",
               :description => "Limit responses to a single template ID. Default provides all templates.",
-              :default => "all"     
-             
-      
+              :default => "all"
+
+
       def print_templates(template_list,templates,options={})
         temp = templates
 
@@ -67,9 +67,9 @@ class Chef
         if hypervisor = options[:hypervisor]
           temp.reject!{|t| t['hypervisor'] != hypervisor}
         end
-        
+
         # Sorting to group by zone ID first, then ID
-        
+
         sort1 = temp.sort_by { |hsh| hsh["id"] }
         sorted = sort1.sort_by { |hsh| hsh["zoneid"] }
 
@@ -87,7 +87,7 @@ class Chef
           template_list << template['name']
         end
       end
-      
+
       def run
         validate!
 
@@ -97,15 +97,15 @@ class Chef
           ui.color('Size (in GB)', :bold),
           ui.color('Zone Name', :bold),
           ui.color('Zone ID', :bold),
-          ui.color('Name', :bold)          
+          ui.color('Name', :bold)
         ]
-        
+
         filter = locate_config_value(:filter)
         zone = locate_config_value(:zone)
         zoneid = locate_config_value(:zoneid)
         hypervisor = locate_config_value(:hypervisor)
         templateid = locate_config_value(:templateid)
-                
+
         settings = connection.list_templates('templatefilter' => filter)
         if response = settings['listtemplatesresponse']
           Chef::Log.debug("Response: #{response}")
@@ -115,12 +115,12 @@ class Chef
             filters[:zone] = zone unless zone == 'all'
             filters[:zoneid] = zoneid unless zoneid == 'all'
             filters[:templateid] = templateid unless templateid == 'all'
-            
+
             print_templates(template_list,templates,filters)
           end
           puts ui.list(template_list, :uneven_columns_across, 6)
         end
-        
+
       end
     end
   end

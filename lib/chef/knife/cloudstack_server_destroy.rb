@@ -24,11 +24,11 @@ class Chef
 
       include Knife::CloudstackBase
       banner "knife cloudstack server destroy INSTANCE_ID"
-      
+
       def run
-        
-        if @name_args.nil?
-          puts #{ui.color("Please provide an Instance ID.", :red)}
+
+        if @name_args.nil? || @name_args.empty?
+          puts "#{ui.color("Please provide an Instance ID.", :red)}"
         end
 
         @name_args.each do |instance_id|
@@ -44,10 +44,10 @@ class Chef
           ui.warn("Destroyed server #{instance_name}")
         end
       end
-              
 
-      
-      
+
+
+
     end
   end
 end
