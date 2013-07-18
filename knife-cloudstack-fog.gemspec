@@ -13,6 +13,7 @@ Gem::Specification.new do |s|
   s.homepage    = "https://github.com/fifthecho/knife-cloudstack-fog"
   s.summary     = %q{Cloudstack Compute Support for Chef's Knife Command}
   s.description = %q{Support for the Chef Knife command, leveraging FOG, for the Apache CloudStack / Citrix CloudPlatform API}
+  s.license     = 'Apache 2.0'
   s.files = Dir['lib/**/*.rb']
   s.require_paths = ["lib"]
 
