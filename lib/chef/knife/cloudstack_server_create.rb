@@ -23,298 +23,421 @@ require 'chef/json_compat'
 require 'chef/knife/cloudstack_base'
 
 class Chef
-  class Knife
-    class CloudstackServerCreate < Knife
+	class Knife
+		class CloudstackServerCreate < Knife
 
-      include Knife::CloudstackBase
+			include Knife::CloudstackBase
 
-      banner "knife cloudstack server create -s SERVICEID -t TEMPLATEID -z ZONEID (options)"
+			banner "knife cloudstack server create -s SERVICEID -t TEMPLATEID -z ZONEID (options)"
 
-      option  :cloudstack_serviceid,
-              :short => "-s SERVICEID",
-              :long => "--serviceid SERVICEID",
-              :description => "The CloudStack service offering ID."
+			option  :cloudstack_serviceid,
+						:short => "-s SERVICEID",
+						:long => "--serviceid SERVICEID",
+						:description => "The CloudStack service offering ID."
 
-      option  :cloudstack_templateid,
-              :short => "-t TEMPLATEID",
-              :long => "--templateid TEMPLATEID",
-              :description => "The CloudStack template ID for the server."
+			option  :cloudstack_templateid,
+						:short => "-t TEMPLATEID",
+						:long => "--templateid TEMPLATEID",
+						:description => "The CloudStack template ID for the server."
 
-      option  :cloudstack_zoneid,
-              :short => "-z ZONEID",
-              :long => "--zoneid ZONE",
-              :description => "The CloudStack zone ID for the server."
+			option  :cloudstack_zoneid,
+						:short => "-z ZONEID",
+						:long => "--zoneid ZONE",
+						:description => "The CloudStack zone ID for the server."
 
-      option  :cloudstack_networkids,
-              :short => "-w NETWORKIDS",
-              :long => "--networkids NETWORKIDS",
-              :description => "Comma separated list of CloudStack network IDs.",
-              :proc => lambda { |n| n.split(/[\s,]+/) },
-              :default => []
+			option  :cloudstack_networkids,
+						:short => "-w NETWORKIDS",
+						:long => "--networkids NETWORKIDS",
+						:description => "Comma separated list of CloudStack network IDs.",
+						:proc => lambda { |n| n.split(/[\s,]+/) },
+						:default => []
 
-      option  :cloudstack_groupids,
-              :short => "-g SECURITYGROUPIDS",
-              :long => "--groupids SECURITYGROUPIDS",
-              :description => "Comma separated list of CloudStack Security Group IDs.",
-              :proc => lambda { |n| n.split(/[\s,]+/) },
-              :default => []
+			option  :cloudstack_groupids,
+						:short => "-g SECURITYGROUPIDS",
+						:long => "--groupids SECURITYGROUPIDS",
+						:description => "Comma separated list of CloudStack Security Group IDs.",
+						:proc => lambda { |n| n.split(/[\s,]+/) },
+						:default => []
 
-      option  :cloudstack_groupnames,
-              :short => "-G SECURITYGROUPNAMES",
-              :long => "--groupnames SECURITYGROUPNAMES",
-              :description => "Comma separated list of CloudStack Security Group names. Each group name must be encapuslated in quotes if it contains whitespace.",
-              :proc => lambda { |n| n.split(/[\s,]+/) },
-              :default => []
+			option  :cloudstack_groupnames,
+						:short => "-G SECURITYGROUPNAMES",
+						:long => "--groupnames SECURITYGROUPNAMES",
+						:description => "Comma separated list of CloudStack Security Group names. Each group name must be encapuslated in quotes if it contains whitespace.",
+						:proc => lambda { |n| n.split(/[\s,]+/) },
+						:default => []
 
-      option  :distro,
-              :short => "-d DISTRO",
-              :long => "--distro DISTRO",
-              :description => "Bootstrap a distro using a template; default is 'chef-full'",
-              :proc => Proc.new { |d| Chef::Config[:knife][:distro] = d },
-              :default => "chef-full"
+			option  :distro,
+						:short => "-d DISTRO",
+						:long => "--distro DISTRO",
+						:description => "Bootstrap a distro using a template; default is 'chef-full'",
+						:proc => Proc.new { |d| Chef::Config[:knife][:distro] = d },
+						:default => "chef-full"
 
-      option  :template_file,
-              :long => "--template-file TEMPLATE",
-              :description => "Full path to location of template to use",
-              :proc => Proc.new { |t| Chef::Config[:knife][:template_file] = t },
-              :default => false
+			option  :template_file,
+						:long => "--template-file TEMPLATE",
+						:description => "Full path to location of template to use",
+						:proc => Proc.new { |t| Chef::Config[:knife][:template_file] = t },
+						:default => false
 
-      option  :run_list,
-              :short => "-r RUN_LIST",
-              :long => "--run-list RUN_LIST",
-              :description => "Comma separated list of roles/recipes to apply",
-              :proc => lambda { |o| o.split(/[\s,]+/) },
-              :default => []
+			option  :run_list,
+						:short => "-r RUN_LIST",
+						:long => "--run-list RUN_LIST",
+						:description => "Comma separated list of roles/recipes to apply",
+						:proc => lambda { |o| o.split(/[\s,]+/) },
+						:default => []
 
-      option  :ssh_user,
-              :short => "-x USERNAME",
-              :long => "--ssh-user USERNAME",
-              :description => "The ssh username",
-              :default => 'root'
+			option  :ssh_user,
+						:short => "-x USERNAME",
+						:long => "--ssh-user USERNAME",
+						:description => "The ssh username",
+						:default => 'root'
 
-      option  :ssh_password,
-              :short => "-P PASSWORD",
-              :long => "--ssh-password PASSWORD",
-              :description => "The ssh password"
+			option  :ssh_password,
+						:short => "-P PASSWORD",
+						:long => "--ssh-password PASSWORD",
+						:description => "The ssh password"
 
-      option  :identity_file,
-              :short => "-i PRIVATE_KEY_FILE",
-              :long => "--identity-file PRIVATE_KEY_FILE",
-              :description => "The Private key file for authenticating SSH session. --keypair option is also needed."
+			option  :identity_file,
+						:short => "-i PRIVATE_KEY_FILE",
+						:long => "--identity-file PRIVATE_KEY_FILE",
+						:description => "The Private key file for authenticating SSH session. --keypair option is also needed."
 
-      option  :server_name,
-              :short => "-N NAME",
-              :long => "--display-name NAME",
-              :description => "The instance display name"
+			option 	:ssh_port,
+						:short => "-p PORT",
+						:long => "--ssh-port PORT",
+						:description => "The port which SSH should be listening on. If unspecified, will default to 22."
 
-      option  :host_name,
-              :short => "-H NAME",
-              :long => "--hostname NAME",
-              :description => "The instance host name"
+			option  :server_name,
+						:short => "-N NAME",
+						:long => "--display-name NAME",
+						:description => "The instance display name"
 
-      option  :keypair,
-              :short => "-k KEYPAIR",
-              :long => "--keypair KEYPAIR",
-              :description => "The CloudStack Key Pair to use for SSH key authentication."
+			option  :host_name,
+						:short => "-H NAME",
+						:long => "--hostname NAME",
+						:description => "The instance host name"
 
-      option  :diskoffering,
-              :short => "-D DISKOFFERINGID",
-              :long => "--diskoffering DISKOFFERINGID",
-              :description => "Specifies either the Disk Offering ID for the ROOT disk for an ISO template, or a DATA disk."
+			option  :keypair,
+						:short => "-k KEYPAIR",
+						:long => "--keypair KEYPAIR",
+						:description => "The CloudStack Key Pair to use for SSH key authentication."
 
-      option  :size,
-              :short => "-Z SIZE",
-              :long => "--size SIZE",
-              :description => "Specifies the arbitrary Disk Size for DATADISK volume in GB. Must be passed with custom size Disk Offering ID."
+			option  :diskoffering,
+						:short => "-D DISKOFFERINGID",
+						:long => "--diskoffering DISKOFFERINGID",
+						:description => "Specifies either the Disk Offering ID for the ROOT disk for an ISO template, or a DATA disk."
 
-      def bootstrap_for_node(host, user, password)
-        Chef::Log.debug("Bootstrap host: #{host}")
-        Chef::Log.debug("Bootstrap user: #{user}")
-        Chef::Log.debug("Bootstrap pass: #{password}")
-        bootstrap = Chef::Knife::Bootstrap.new
-        bootstrap.name_args = host
-        bootstrap.config[:run_list] = config[:run_list]
-        bootstrap.config[:ssh_user] = user
-        bootstrap.config[:ssh_password] = password
-        bootstrap.config[:identity_file] = locate_config_value(:identity_file)
-        bootstrap.config[:chef_node_name] = config[:server_name] if config[:server_name]
-        bootstrap.config[:prerelease] = config[:prerelease]
-        bootstrap.config[:bootstrap_version] = locate_config_value(:bootstrap_version)
-        bootstrap.config[:distro] = locate_config_value(:distro)
-        bootstrap.config[:use_sudo] = true
-        bootstrap.config[:template_file] = locate_config_value(:template_file)
-        bootstrap.config[:environment] = config[:environment]
-        # may be needed for vpc_mode
-        bootstrap.config[:no_host_key_verify] = config[:no_host_key_verify]
-        bootstrap
-      end
+			option  :size,
+						:short => "-Z SIZE",
+						:long => "--size SIZE",
+						:description => "Specifies the arbitrary Disk Size for DATADISK volume in GB. Must be passed with custom size Disk Offering ID."
 
-      def tcp_test_ssh(hostname)
-        print("#{ui.color(".", :magenta)}")
-        tcp_socket = TCPSocket.new(hostname, 22)
-        readable = IO.select([tcp_socket], nil, nil, 5)
-        if readable
-          Chef::Log.debug("\nsshd accepting connections on #{hostname}, banner is #{tcp_socket.gets}\n")
-          yield
-          true
-        else
-          false
-        end
+			option 	:random_ssh_port,
+						:long => "--random-ssh-port",
+						:description => "Map a random, unused high-level port to 22 for SSH and creates a port forward for this mapping. For Isolated Networking and VPC only."
 
-        rescue Errno::ETIMEDOUT
-          false
-        rescue Errno::EPERM
-          false
-        rescue Errno::ECONNREFUSED
-          sleep 2
-          false
-        rescue Errno::EHOSTUNREACH
-          sleep 2
-          false
-        rescue Errno::ENETUNREACH
-          sleep 30
-          false
-        ensure
-        tcp_socket && tcp_socket.close
-      end
+			option 	:ssh_gateway,
+						:short => "-W GATEWAY",
+						:long => "--ssh-gateway GATEWAY",
+						:description => "The ssh gateway server",
+						:proc => Proc.new { |key| Chef::Config[:knife][:ssh_gateway] = key }						
 
-      def run
-        $stdout.sync = true
+			# def bootstrap_for_node(host, user, password)
+			def bootstrap_for_node(server, ssh_host)
+				host = server["name"]
+				user = config[:ssh_user]
+				password = server["password"]
+				Chef::Log.debug("Bootstrap host: #{host}")
+				Chef::Log.debug("Bootstrap user: #{user}")
+				Chef::Log.debug("Bootstrap pass: #{password}")
+				bootstrap = Chef::Knife::Bootstrap.new
+				bootstrap.name_args = [ssh_host]
+				bootstrap.config[:run_list] = config[:run_list]
+				bootstrap.config[:ssh_user] = user
+				bootstrap.config[:ssh_password] = password
+				bootstrap.config[:ssh_gateway] = config[:ssh_gateway]
+				bootstrap.config[:identity_file] = locate_config_value(:identity_file)
+				bootstrap.config[:chef_node_name] = config[:server_name] if config[:server_name]
+				bootstrap.config[:prerelease] = config[:prerelease]
+				bootstrap.config[:bootstrap_version] = locate_config_value(:bootstrap_version)
+				bootstrap.config[:distro] = locate_config_value(:distro)
+				bootstrap.config[:use_sudo] = true
+				bootstrap.config[:template_file] = locate_config_value(:template_file)
+				bootstrap.config[:environment] = config[:environment]
+				# may be needed for vpc_mode
+				bootstrap.config[:no_host_key_verify] = config[:no_host_key_verify]
+				bootstrap
+			end
 
-        options = {}
+			def vpc_mode?
+				# Virtual Private Cloud / Isolated Networking requires a network id. If
+				# present, do a few things differently
+				!!locate_config_value(:cloudstack_networkids)
+			end
 
-        options['zoneid'] = locate_config_value(:cloudstack_zoneid)
-        options['templateid'] = locate_config_value(:cloudstack_templateid)
+			def wait_for_sshd(hostname)
+				config[:ssh_gateway] ? wait_for_tunnelled_sshd(hostname) : wait_for_direct_sshd(hostname, @sshport)
+			end
 
-        if locate_config_value(:cloudstack_serviceid) != nil
-          options['serviceofferingid'] = locate_config_value(:cloudstack_serviceid)
-        end
+			def wait_for_tunnelled_sshd(hostname)
+				print(".")
+				print(".") until tunnel_test_ssh(ssh_connect_host) {
+					sleep @initial_sleep_delay ||= (vpc_mode? ? 40 : 10)
+					puts("done")
+				}
+			end
 
-        if locate_config_value(:server_name) != nil
-          options['displayname'] = locate_config_value(:server_name)
-        end
+			def tunnel_test_ssh(hostname, &block)
+				gw_host, gw_user = config[:ssh_gateway].split('@').reverse
+				gw_host, gw_port = gw_host.split(':')
+				gateway = Net::SSH::Gateway.new(gw_host, gw_user, :port => gw_port || 22)
+				status = false
+				gateway.open(hostname, config[:ssh_port]) do |local_tunnel_port|
+					status = tcp_test_ssh('localhost', local_tunnel_port, &block)
+				end
+				status
+				rescue SocketError, Errno::ECONNREFUSED, Errno::EHOSTUNREACH, Errno::ENETUNREACH, IOError
+					sleep 2
+					false
+				rescue Errno::EPERM, Errno::ETIMEDOUT
+					false
+			end
 
-        if locate_config_value(:host_name) != nil
-          options['name'] = locate_config_value(:host_name)
-        end
+			def wait_for_direct_sshd(hostname, ssh_port)
+				print(".") until tcp_test_ssh(ssh_connect_host, ssh_port) {
+					sleep @initial_sleep_delay ||= (vpc_mode? ? 40 : 10)
+					puts("done")
+				}
+			end
 
-        network_ids = []
-        if locate_config_value(:cloudstack_networkids) != []
-          cs_networkids = locate_config_value(:cloudstack_networkids)
-          cs_networkids.each do |id|
-            network_ids.push(id)
-          end
-          options['networkids'] = network_ids
-        end
+			def ssh_connect_host
+				@ssh_connect_host ||= if config[:server_connect_attribute]
+					server.send(config[:server_connect_attribute])
+				else
+					Chef::Log.debug("Connecting to #{@server['nic'].first['ipaddress']}")
+					@server['nic'].first['ipaddress']
+					# vpc_mode? ? server.private_ip_address : server.dns_name
+				end
+			end
 
-        security_groups = []
-        if locate_config_value(:cloudstack_groupids) != []
-          cs_groupids = locate_config_value(:cloudstack_groupids)
-          cs_groupids.each do |id|
-            security_groups.push(id)
-          end
-          options['securitygroupids'] = security_groups
-        elsif locate_config_value(:cloudstack_groupnames) != []
-          cs_groupnames = locate_config_value(:cloudstack_groupnames)
-          cs_groupnames.each do |name|
-            security_groups.push(name)
-          end
-          options['securitygroupnames'] = security_groups
-        end
+			def tcp_test_ssh(hostname, ssh_port)
+				Chef::Log.debug("Conecting to #{hostname} on #{ssh_port}.")
+				print("#{ui.color(".", :magenta)}")
+				tcp_socket = TCPSocket.new(hostname, ssh_port)
+				readable = IO.select([tcp_socket], nil, nil, 5)
+				if readable
+					Chef::Log.debug("sshd accepting connections on #{hostname}, banner is #{tcp_socket.gets}")
+				yield
+					true
+				else
+					false
+				end
+				rescue SocketError, Errno::ECONNREFUSED, Errno::EHOSTUNREACH, Errno::ENETUNREACH, IOError
+					sleep 2
+					false
+				rescue Errno::EPERM, Errno::ETIMEDOUT
+					false
+				ensure
+				tcp_socket && tcp_socket.close
+			end
 
-        if locate_config_value(:keypair) != nil
-          options['keypair'] = locate_config_value(:keypair)
-        end
+			def check_port_available(public_port)
+				puts "Checking if port #{public_port} is available."
+				pubport = public_port.to_i
+				port_forward_rules_query = @connection.list_port_forwarding_rules({'ipaddressid' => settings['cloudstack']['ipaddressid'] })
+				port_rules = port_forward_rules_query['listportforwardingrulesresponse']['portforwardingrule']
+				is_available = true
+				some_possible_rules = port_rules.select { |rule| rule['publicport'].to_i <= pubport }
+				possible_rules = some_possible_rules.select { |rule| rule['publicendport'].to_i >= pubport }
+				possible_rules.each do |rule|
+					startport = rule['publicport'].to_i
+					endport = rule['publicendport'].to_i
+					puts "Determining if #{pubport} is between #{startport} and #{endport}."
+					if (endport != startport)
+						if pubport.between?(startport, endport)
+							is_available = false
+						else
+							is_available = true
+						end
+					else
+						if (pubport == startport)
+							is_available = false
+						else
+							is_available = true
+						end
+					end
+				end
+				return is_available
+			end
 
-        if locate_config_value(:diskoffering) != nil
-          options['diskofferingid'] = locate_config_value(:diskoffering)
-        end
+			def add_port_forward(public_start_port, public_end_port, server_id)
+				pfwdops = {}
+				pfwdops['ipaddressid'] = settings['cloudstack']['ipaddressid']
+				pfwdops['privateport'] = settings['cloudstack']['privateport']
+				pfwdops['protocol'] = "TCP"
+				pfwdops['virtualmachineid'] = server_id
+				pfwdops['openfirewall'] = "true"
+				pfwdops['publicport'] = public_start_port
+				pfwdops['publicendport'] = public_end_port
+				rule_create_job = @connection.create_port_forwarding_rule(pfwdops)
+			end
 
-        if locate_config_value(:size) != nil
-          options['size'] = locate_config_value(:size)
-        end
+			def create_server_def
+				server_def = {
+					"templateid" => locate_config_value(:cloudstack_templateid),
+					"serviceofferingid" => locate_config_value(:cloudstack_serviceid),
+					"zoneid" => locate_config_value(:cloudstack_zoneid)
+				}
 
-        Chef::Log.debug("Options: #{options} \n")
+				if locate_config_value(:server_name) != nil
+					server_def["displayname"] = locate_config_value(:server_name)
+				end
 
-        server = connection.deploy_virtual_machine(options)
-        jobid = server['deployvirtualmachineresponse'].fetch('jobid')
+				if locate_config_value(:host_name) != nil
+					server_def["name"] = locate_config_value(:host_name)
+				end
 
-        server_start = connection.query_async_job_result('jobid'=>jobid)
+				network_ids = []
+				if locate_config_value(:cloudstack_networkids) != []
+					cs_networkids = locate_config_value(:cloudstack_networkids)
+					cs_networkids.each do |id|
+						network_ids.push(id)
+					end
+					server_def["networkids"] = network_ids
+				end
 
-        Chef::Log.debug("Job ID: #{jobid} \n")
+				security_groups = []
+				if locate_config_value(:cloudstack_groupids) != []
+					cs_groupids = locate_config_value(:cloudstack_groupids)
+					cs_groupids.each do |id|
+						security_groups.push(id)
+					end
+					server_def["securitygroupids"] = security_groups
+				elsif locate_config_value(:cloudstack_groupnames) != []
+					cs_groupnames = locate_config_value(:cloudstack_groupnames)
+					cs_groupnames.each do |name|
+						security_groups.push(name)
+					end
+					server_def["securitygroupnames"] = security_groups
+				end
 
-        print "#{ui.color("Waiting for server", :magenta)}"
-        while server_start['queryasyncjobresultresponse'].fetch('jobstatus') == 0
-          print "#{ui.color(".", :magenta)}"
-          sleep(15)
-          server_start = connection.query_async_job_result('jobid'=>jobid)
-          Chef::Log.debug("Server_Start: #{server_start} \n")
-        end
-        puts "\n\n"
+				if locate_config_value(:keypair) != nil
+					server_def["keypair"] = locate_config_value(:keypair)
+				end
 
-        if server_start['queryasyncjobresultresponse'].fetch('jobstatus') == 2
-          errortext = server_start['queryasyncjobresultresponse'].fetch('jobresult').fetch('errortext')
-          puts "#{ui.color("ERROR! Job failed with #{errortext}", :red)}"
-        end
+				if locate_config_value(:diskoffering) != nil
+					server_def["diskofferingid"] = locate_config_value(:diskoffering)
+				end
 
-        if server_start['queryasyncjobresultresponse'].fetch('jobstatus') == 1
+				if locate_config_value(:size) != nil
+					server_def["size"] = locate_config_value(:size)
+				end
 
-          Chef::Log.debug("Job ID: #{jobid} \n")
-          Chef::Log.debug("Options: #{options} \n")
-          server_start = connection.query_async_job_result('jobid'=>jobid)
-          Chef::Log.debug("Server_Start: #{server_start} \n")
+				server_def
+			end
 
-          server_info = server_start['queryasyncjobresultresponse']['jobresult']['virtualmachine']
+			def run
+				$stdout.sync = true
+				options = create_server_def
+				Chef::Log.debug("Options: #{options} \n")
+				
+				@sshport = 22
+				
+				if locate_config_value(:ssh_port) != nil
+					@sshport = locate_config_value(:ssh_port).to_i
+				end
 
-          server_name = server_info['displayname']
-          server_id = server_info['name']
-          server_serviceoffering = server_info['serviceofferingname']
-          server_template = server_info['templatename']
-          if server_info['password'] != nil
-            ssh_password = server_info['password']
-          else
-            ssh_password = locate_config_value(:ssh_password)
-          end
+				if locate_config_value(:random_ssh_port) != nil
+					Chef::Log.debug("Insert code here...")
+				end
 
-          ssh_user = locate_config_value(:ssh_user)
+				Chef::Log.debug("Connecting over port #{@sshport}")
 
-          public_ip = nil
+				serverdeploy = connection.deploy_virtual_machine(options)
+				jobid = serverdeploy['deployvirtualmachineresponse'].fetch('jobid')
 
-          if server_info['nic'].size > 0
-            public_ip = server_info['nic'].first['ipaddress']
-          end
+				server_start = connection.query_async_job_result('jobid'=>jobid)
 
-          puts "\n\n"
-          puts "#{ui.color("Name", :cyan)}: #{server_name}"
-          puts "#{ui.color("Public IP", :cyan)}: #{public_ip}"
-          puts "#{ui.color("Username", :cyan)}: #{ssh_user}"
-          puts "#{ui.color("Password", :cyan)}: #{ssh_password}"
+				Chef::Log.debug("Job ID: #{jobid} \n")
 
-          print "\n#{ui.color("Waiting for sshd", :magenta)}"
+				print "#{ui.color("Waiting for server", :magenta)}"
+				while server_start['queryasyncjobresultresponse'].fetch('jobstatus') == 0
+					print "#{ui.color(".", :magenta)}"
+					sleep(15)
+					server_start = connection.query_async_job_result('jobid'=>jobid)
+					Chef::Log.debug("Server_Start: #{server_start} \n")
+				end
+				puts "\n\n"
 
-          print("#{ui.color(".", :magenta)}") until tcp_test_ssh(public_ip) { sleep @initial_sleep_delay ||= 10; puts("done") }
+				if server_start['queryasyncjobresultresponse'].fetch('jobstatus') == 2
+					errortext = server_start['queryasyncjobresultresponse'].fetch('jobresult').fetch('errortext')
+					puts "#{ui.color("ERROR! Job failed with #{errortext}", :red)}"
+				end
 
-          puts("#{ui.color("Waiting for password/keys to sync.", :magenta)}")
-          sleep 15
+				if server_start['queryasyncjobresultresponse'].fetch('jobstatus') == 1
 
-          bootstrap_for_node(public_ip, ssh_user, ssh_password).run
+					Chef::Log.debug("Job ID: #{jobid} \n")
+					Chef::Log.debug("Options: #{options} \n")
+					server_start = connection.query_async_job_result('jobid'=>jobid)
+					Chef::Log.debug("Server_Start: #{server_start} \n")
 
-          Chef::Log.debug("#{server_info}")
+					@server = server_start['queryasyncjobresultresponse']['jobresult']['virtualmachine']
 
-          puts "\n"
-          puts "#{ui.color("Instance Name", :green)}: #{server_name}"
-          puts "#{ui.color("Instance ID", :green)}: #{server_id}"
-          puts "#{ui.color("Service Offering", :green)}: #{server_serviceoffering}"
-          puts "#{ui.color("Template", :green)}: #{server_template}"
-          puts "#{ui.color("Public IP Address", :green)}: #{public_ip}"
-          puts "#{ui.color("User", :green)}: #{ssh_user}"
-          puts "#{ui.color("Password", :green)}: #{ssh_password}"
-          puts "#{ui.color("Environment", :green)}: #{config[:environment] || '_default'}"
-          puts "#{ui.color("Run List", :green)}: #{config[:run_list].join(', ')}"
-        end
+					server_name = @server['displayname']
+					server_id = @server['name']
+					server_serviceoffering = @server['serviceofferingname']
+					server_template = @server['templatename']
+					if @server['password'] != nil
+						ssh_password = @server['password']
+					else
+						ssh_password = locate_config_value(:ssh_password)
+					end
 
-      end
+					ssh_user = locate_config_value(:ssh_user)
 
-    end
-  end
+					primary_ip = nil
+
+					if @server['nic'].size > 0
+						primary_ip = @server['nic'].first['ipaddress']
+					end
+
+					puts "\n\n"
+					puts "#{ui.color("Name", :cyan)}: #{server_name}"
+					puts "#{ui.color("Primary IP", :cyan)}: #{primary_ip}"
+					puts "#{ui.color("Username", :cyan)}: #{ssh_user}"
+					puts "#{ui.color("Password", :cyan)}: #{ssh_password}"
+
+					print "\n#{ui.color("Waiting for sshd", :magenta)}"
+					wait_for_sshd(ssh_connect_host)
+
+					
+
+          			# print("#{ui.color(".", :magenta)}") until tcp_test_ssh(primary_ip, sshport) { sleep @initial_sleep_delay ||= 10; puts("done") }
+
+					puts("#{ui.color("Waiting for password/keys to sync.", :magenta)}")
+					sleep 15
+
+					Chef::Log.debug("Connnecting to #{@server} via #{ssh_connect_host} and bootstrapping Chef.")
+
+					# bootstrap_for_node(primary_ip, ssh_user, ssh_password).run
+					bootstrap_for_node(@server,ssh_connect_host).run
+
+					Chef::Log.debug("#{@server}")
+
+					puts "\n"
+					puts "#{ui.color("Instance Name", :green)}: #{server_name}"
+					puts "#{ui.color("Instance ID", :green)}: #{server_id}"
+					puts "#{ui.color("Service Offering", :green)}: #{server_serviceoffering}"
+					puts "#{ui.color("Template", :green)}: #{server_template}"
+					puts "#{ui.color("Public IP Address", :green)}: #{primary_ip}"
+					puts "#{ui.color("User", :green)}: #{ssh_user}"
+					puts "#{ui.color("Password", :green)}: #{ssh_password}"
+					puts "#{ui.color("Environment", :green)}: #{config[:environment] || '_default'}"
+					puts "#{ui.color("Run List", :green)}: #{config[:run_list].join(', ')}"
+				end
+
+			end
+
+		end
+	end
 end
