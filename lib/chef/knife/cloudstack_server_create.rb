@@ -180,8 +180,8 @@ class Chef
 			end
 
 			def wait_for_tunnelled_sshd(hostname)
-				print(".")
-				print(".") until tunnel_test_ssh(ssh_connect_host) {
+				print("#{ui.color(".", :magenta)}")
+				print("#{ui.color(".", :magenta)}") until tunnel_test_ssh(ssh_connect_host) {
 					sleep @initial_sleep_delay ||= (vpc_mode? ? 40 : 10)
 					puts("done")
 				}
@@ -204,7 +204,7 @@ class Chef
 			end
 
 			def wait_for_direct_sshd(hostname, ssh_port)
-				print(".") until tcp_test_ssh(ssh_connect_host, ssh_port) {
+				print("#{ui.color(".", :magenta)}") until tcp_test_ssh(ssh_connect_host, ssh_port) {
 					sleep @initial_sleep_delay ||= (vpc_mode? ? 40 : 10)
 					puts("done")
 				}
@@ -280,11 +280,12 @@ class Chef
 				pfwdops['publicport'] = public_start_port
 				pfwdops['publicendport'] = public_end_port
 				rule_create_job = connection.create_port_forwarding_rule(pfwdops)
-				puts "#{ui.color("Creating port forwarding rule.", :cyan)}"
+				print "#{ui.color("Creating port forwarding rule.", :cyan)}"
 				while (@connection.query_async_job_result({'jobid' => rule_create_job['createportforwardingruleresponse']['jobid']})['queryasyncjobresultresponse'].fetch('jobstatus') == 0)
-					print(".")
+					print("#{ui.color(".", :cyan)}")
 					sleep 2
 				end
+				print("\n")
 			end
 
 			def create_server_def
@@ -425,16 +426,11 @@ class Chef
 					print "\n#{ui.color("Waiting for sshd", :magenta)}"
 					wait_for_sshd(ssh_connect_host)
 
-					
-
-          			# print("#{ui.color(".", :magenta)}") until tcp_test_ssh(primary_ip, sshport) { sleep @initial_sleep_delay ||= 10; puts("done") }
-
 					puts("#{ui.color("Waiting for password/keys to sync.", :magenta)}")
 					sleep @initial_sleep_delay
 
 					Chef::Log.debug("Connnecting to #{@server} via #{ssh_connect_host} and bootstrapping Chef.")
 
-					# bootstrap_for_node(primary_ip, ssh_user, ssh_password).run
 					bootstrap_for_node(@server,ssh_connect_host).run
 
 					Chef::Log.debug("#{@server}")
