@@ -444,7 +444,7 @@ class Chef
 					puts "#{ui.color("Instance ID", :green)}: #{server_id}"
 					puts "#{ui.color("Service Offering", :green)}: #{server_serviceoffering}"
 					puts "#{ui.color("Template", :green)}: #{server_template}"
-					puts "#{ui.color("Public IP Address", :green)}: #{primary_ip}"
+					puts "#{ui.color("Public IP Address", :green)}: #{@primary_ip}"
 					puts "#{ui.color("User", :green)}: #{ssh_user}"
 					puts "#{ui.color("Password", :green)}: #{ssh_password}"
 					puts "#{ui.color("Environment", :green)}: #{config[:environment] || '_default'}"
