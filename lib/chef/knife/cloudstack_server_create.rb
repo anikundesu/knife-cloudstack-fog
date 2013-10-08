@@ -139,8 +139,8 @@ class Chef
 			option 	:ssh_gateway,
 						:short => "-W GATEWAY",
 						:long => "--ssh-gateway GATEWAY",
-						:description => "The ssh gateway server",
-						:proc => Proc.new { |key| Chef::Config[:knife][:ssh_gateway] = key }						
+						:description => "The ssh gateway server. Connection is defined as USERNAME@HOST:PORT",
+						:proc => Proc.new { |key| Chef::Config[:knife][:ssh_gateway] = key }
 
 			# def bootstrap_for_node(host, user, password)
 			def bootstrap_for_node(server, ssh_host)
@@ -214,8 +214,8 @@ class Chef
 				@ssh_connect_host ||= if config[:server_connect_attribute]
 					server.send(config[:server_connect_attribute])
 				else
-					Chef::Log.debug("Connecting to #{@server['nic'].first['ipaddress']}")
-					@server['nic'].first['ipaddress']
+					Chef::Log.debug("Connecting to #{@primary_ip}")
+					@primary_ip
 					# vpc_mode? ? server.private_ip_address : server.dns_name
 				end
 			end
@@ -241,10 +241,10 @@ class Chef
 				tcp_socket && tcp_socket.close
 			end
 
-			def check_port_available(public_port)
-				puts "Checking if port #{public_port} is available."
+			def check_port_available(public_port, ipaddressid)
+				Chef::Log.debug("Checking if port #{public_port} is available.")
 				pubport = public_port.to_i
-				port_forward_rules_query = @connection.list_port_forwarding_rules({'ipaddressid' => settings['cloudstack']['ipaddressid'] })
+				port_forward_rules_query = connection.list_port_forwarding_rules({'ipaddressid' => ipaddressid })
 				port_rules = port_forward_rules_query['listportforwardingrulesresponse']['portforwardingrule']
 				is_available = true
 				some_possible_rules = port_rules.select { |rule| rule['publicport'].to_i <= pubport }
@@ -252,7 +252,7 @@ class Chef
 				possible_rules.each do |rule|
 					startport = rule['publicport'].to_i
 					endport = rule['publicendport'].to_i
-					puts "Determining if #{pubport} is between #{startport} and #{endport}."
+					Chef::Log.debug("Determining if #{pubport} is between #{startport} and #{endport}.")
 					if (endport != startport)
 						if pubport.between?(startport, endport)
 							is_available = false
@@ -270,16 +270,21 @@ class Chef
 				return is_available
 			end
 
-			def add_port_forward(public_start_port, public_end_port, server_id)
+			def add_port_forward(public_start_port, public_end_port, server_id, ipaddressid, privateport)
 				pfwdops = {}
-				pfwdops['ipaddressid'] = settings['cloudstack']['ipaddressid']
-				pfwdops['privateport'] = settings['cloudstack']['privateport']
+				pfwdops['ipaddressid'] = ipaddressid
+				pfwdops['privateport'] = privateport
 				pfwdops['protocol'] = "TCP"
 				pfwdops['virtualmachineid'] = server_id
 				pfwdops['openfirewall'] = "true"
 				pfwdops['publicport'] = public_start_port
 				pfwdops['publicendport'] = public_end_port
-				rule_create_job = @connection.create_port_forwarding_rule(pfwdops)
+				rule_create_job = connection.create_port_forwarding_rule(pfwdops)
+				puts "#{ui.color("Creating port forwarding rule.", :cyan)}"
+				while (@connection.query_async_job_result({'jobid' => rule_create_job['createportforwardingruleresponse']['jobid']})['queryasyncjobresultresponse'].fetch('jobstatus') == 0)
+					print(".")
+					sleep 2
+				end
 			end
 
 			def create_server_def
@@ -340,18 +345,12 @@ class Chef
 				$stdout.sync = true
 				options = create_server_def
 				Chef::Log.debug("Options: #{options} \n")
-				
+
+				@initial_sleep_delay = 10				
 				@sshport = 22
-				
 				if locate_config_value(:ssh_port) != nil
 					@sshport = locate_config_value(:ssh_port).to_i
 				end
-
-				if locate_config_value(:random_ssh_port) != nil
-					Chef::Log.debug("Insert code here...")
-				end
-
-				Chef::Log.debug("Connecting over port #{@sshport}")
 
 				serverdeploy = connection.deploy_virtual_machine(options)
 				jobid = serverdeploy['deployvirtualmachineresponse'].fetch('jobid')
@@ -363,7 +362,7 @@ class Chef
 				print "#{ui.color("Waiting for server", :magenta)}"
 				while server_start['queryasyncjobresultresponse'].fetch('jobstatus') == 0
 					print "#{ui.color(".", :magenta)}"
-					sleep(15)
+					sleep @initial_sleep_delay
 					server_start = connection.query_async_job_result('jobid'=>jobid)
 					Chef::Log.debug("Server_Start: #{server_start} \n")
 				end
@@ -395,15 +394,31 @@ class Chef
 
 					ssh_user = locate_config_value(:ssh_user)
 
-					primary_ip = nil
+					@primary_ip = nil
 
 					if @server['nic'].size > 0
-						primary_ip = @server['nic'].first['ipaddress']
+						@primary_ip = @server['nic'].first['ipaddress']
 					end
+
+					if locate_config_value(:random_ssh_port) != nil
+						public_ips = connection.list_public_ip_addresses("associatednetworkid" => @server['nic'][0]['networkid'])
+						primary_public_ip_id = public_ips['listpublicipaddressesresponse']['publicipaddress'][0]['id']
+						@primary_ip = public_ips['listpublicipaddressesresponse']['publicipaddress'][0]['ipaddress']
+						pubport = rand(49152..65535)
+						while (check_port_available(pubport, primary_public_ip_id) == false)
+							pubport = rand(49152..65535)
+						end
+						add_port_forward(pubport, pubport, server_id, primary_public_ip_id, @sshport)
+						@sshport = pubport
+					end
+
+
+
+					Chef::Log.debug("Connecting over port #{@sshport}")
 
 					puts "\n\n"
 					puts "#{ui.color("Name", :cyan)}: #{server_name}"
-					puts "#{ui.color("Primary IP", :cyan)}: #{primary_ip}"
+					puts "#{ui.color("Primary IP", :cyan)}: #{@primary_ip}"
 					puts "#{ui.color("Username", :cyan)}: #{ssh_user}"
 					puts "#{ui.color("Password", :cyan)}: #{ssh_password}"
 
@@ -415,7 +430,7 @@ class Chef
           			# print("#{ui.color(".", :magenta)}") until tcp_test_ssh(primary_ip, sshport) { sleep @initial_sleep_delay ||= 10; puts("done") }
 
 					puts("#{ui.color("Waiting for password/keys to sync.", :magenta)}")
-					sleep 15
+					sleep @initial_sleep_delay
 
 					Chef::Log.debug("Connnecting to #{@server} via #{ssh_connect_host} and bootstrapping Chef.")
 
