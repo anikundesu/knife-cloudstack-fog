@@ -183,7 +183,7 @@ class Chef
 				print("#{ui.color(".", :magenta)}")
 				print("#{ui.color(".", :magenta)}") until tunnel_test_ssh(ssh_connect_host) {
 					sleep @initial_sleep_delay ||= (vpc_mode? ? 40 : 10)
-					puts("done")
+					puts("#{ui.color(". Done.", :magenta)}")
 				}
 			end
 
@@ -206,7 +206,7 @@ class Chef
 			def wait_for_direct_sshd(hostname, ssh_port)
 				print("#{ui.color(".", :magenta)}") until tcp_test_ssh(ssh_connect_host, ssh_port) {
 					sleep @initial_sleep_delay ||= (vpc_mode? ? 40 : 10)
-					puts("done")
+					puts("#{ui.color(". Done.", :magenta)}")
 				}
 			end
 
@@ -441,6 +441,7 @@ class Chef
 					puts "#{ui.color("Service Offering", :green)}: #{server_serviceoffering}"
 					puts "#{ui.color("Template", :green)}: #{server_template}"
 					puts "#{ui.color("Public IP Address", :green)}: #{@primary_ip}"
+					puts "#{ui.color("Port", :green)}: #{@sshport}"
 					puts "#{ui.color("User", :green)}: #{ssh_user}"
 					puts "#{ui.color("Password", :green)}: #{ssh_password}"
 					puts "#{ui.color("Environment", :green)}: #{config[:environment] || '_default'}"
