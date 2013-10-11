@@ -428,6 +428,7 @@ class Chef
 
 					puts("#{ui.color("Waiting for password/keys to sync.", :magenta)}")
 					sleep @initial_sleep_delay
+					sleep @initial_sleep_delay
 
 					Chef::Log.debug("Connnecting to #{@server} via #{ssh_connect_host} and bootstrapping Chef.")
 
