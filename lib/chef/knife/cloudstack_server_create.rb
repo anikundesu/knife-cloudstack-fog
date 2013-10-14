@@ -174,88 +174,6 @@ class Chef
 				end
 			end
 
-			def vpc_mode?
-				# Virtual Private Cloud / Isolated Networking requires a network id. If
-				# present, do a few things differently
-				!!locate_config_value(:cloudstack_networkids)
-			end
-
-			def wait_for_sshd(hostname)
-				config[:ssh_gateway] ? wait_for_tunnelled_sshd(hostname) : wait_for_direct_sshd(hostname, @sshport)
-			end
-
-			def wait_for_tunnelled_sshd(hostname)
-				Chef::Log.debug("Connecting to #{hostname} via wait_for_tunnelled_sshd")
-				print("#{ui.color(".", :magenta)}")
-				print("#{ui.color(".", :magenta)}") until tunnel_test_ssh(ssh_connect_host) {
-					sleep @initial_sleep_delay ||= (vpc_mode? ? 40 : 10)
-					puts("#{ui.color(". Done.", :magenta)}")
-				}
-			end
-
-			def tunnel_test_ssh(hostname, &block)
-				gw_host, gw_user = config[:ssh_gateway].split('@').reverse
-				gw_host, gw_port = gw_host.split(':')
-				Chef::Log.debug("Connecting to #{hostname} via #{gw_host} over port #{gw_port}.")
-				gateway = Net::SSH::Gateway.new(gw_host, gw_user, :port => gw_port || 22)
-				status = false
-				gateway.open(hostname, config[:ssh_port]) do |local_tunnel_port|
-					status = tcp_test_ssh('localhost', local_tunnel_port, &block)
-					Chef::Log.debug "Opened local port #{local_tunnel_port} to tunnel the connection."
-				end
-				status
-				rescue SocketError, Errno::ECONNREFUSED, Errno::EHOSTUNREACH, Errno::ENETUNREACH, IOError
-					sleep 2
-					false
-				rescue Errno::EPERM, Errno::ETIMEDOUT
-					false
-				rescue Errno::Disconnect
-					sleep @initial_sleep_delay
-					retry
-			end
-
-			def wait_for_direct_sshd(hostname, ssh_port)
-				Chef::Log.debug("Connecting directly to #{hostname} over port #{ssh_port}")
-				print("#{ui.color(".", :magenta)}") until tcp_test_ssh(ssh_connect_host, ssh_port) {
-					sleep @initial_sleep_delay ||= (vpc_mode? ? 40 : 10)
-					puts("#{ui.color(". Done.", :magenta)}")
-				}
-			end
-
-			def ssh_connect_host
-				@ssh_connect_host ||= if config[:server_connect_attribute]
-					server.send(config[:server_connect_attribute])
-				else
-					Chef::Log.debug("Connecting to #{@primary_ip}")
-					@primary_ip
-					# vpc_mode? ? server.private_ip_address : server.dns_name
-				end
-			end
-
-			def tcp_test_ssh(hostname, ssh_port)
-				Chef::Log.debug("Conecting to #{hostname} on #{ssh_port}.")
-				print("#{ui.color(".", :magenta)}")
-				tcp_socket = TCPSocket.new(hostname, ssh_port)
-				readable = IO.select([tcp_socket], nil, nil, 5)
-				if readable
-					Chef::Log.debug("sshd accepting connections on #{hostname}, banner is #{tcp_socket.gets}")
-				yield
-					true
-				else
-					false
-				end
-				rescue SocketError, Errno::ECONNREFUSED, Errno::EHOSTUNREACH, Errno::ENETUNREACH, IOError
-					sleep 2
-					false
-				rescue Errno::EPERM, Errno::ETIMEDOUT
-					false
-				rescue Errno::Disconnect
-					sleep @initial_sleep_delay
-					retry
-				ensure
-				tcp_socket && tcp_socket.close
-			end
-
 			def check_port_available(public_port, ipaddressid)
 				Chef::Log.debug("Checking if port #{public_port} is available.")
 				pubport = public_port.to_i
@@ -357,6 +275,39 @@ class Chef
 				server_def
 			end
 
+      def knife_ssh
+        ssh = Chef::Knife::Ssh.new
+        ssh.ui = ui
+        ssh.name_args = [ server_name, ssh_command ]
+        ssh.config[:ssh_user] = Chef::Config[:knife][:ssh_user] || config[:ssh_user]
+        ssh.config[:ssh_password] = config[:ssh_password]
+        ssh.config[:ssh_port] = Chef::Config[:knife][:ssh_port] || config[:ssh_port]
+        ssh.config[:ssh_gateway] = Chef::Config[:knife][:ssh_gateway] || config[:ssh_gateway]
+        ssh.config[:forward_agent] = Chef::Config[:knife][:forward_agent] || config[:forward_agent]
+        ssh.config[:identity_file] = Chef::Config[:knife][:identity_file] || config[:identity_file]
+        ssh.config[:manual] = true
+        ssh.config[:host_key_verify] = Chef::Config[:knife][:host_key_verify] || config[:host_key_verify]
+        ssh.config[:on_error] = :raise
+        ssh
+      end
+
+      def knife_ssh_with_password_auth
+        ssh = knife_ssh
+        ssh.config[:identity_file] = nil
+        ssh.config[:ssh_password] = ssh.get_password
+        ssh
+      end
+
+      def ssh_command
+        command = render_template(read_template)
+
+        if config[:use_sudo]
+          command = config[:use_sudo_password] ? "echo #{config[:ssh_password]} | sudo -S #{command}" : "sudo #{command}"
+        end
+
+        command
+      end
+
 			def run
 				$stdout.sync = true
 				options = create_server_def
@@ -438,10 +389,15 @@ class Chef
 					puts "#{ui.color("Username", :cyan)}: #{ssh_user}"
 					puts "#{ui.color("Password", :cyan)}: #{ssh_password}"
 
-					print "\n#{ui.color("Waiting for sshd", :magenta)}"
-					wait_for_sshd(ssh_connect_host)
+					begin
+						knife_ssh.run
+					rescue Net::SSH::AuthenticationFailed
+						unless config[:ssh_password]
+							ui.info("Failed to authenticate #{config[:ssh_user]} - trying password auth")
+							knife_ssh_with_password_auth.run
+						end
+					end
 
-					puts("#{ui.color("Waiting for password/keys to sync.", :magenta)}")
 					sleep @initial_sleep_delay
 					sleep @initial_sleep_delay
 					sleep @initial_sleep_delay
