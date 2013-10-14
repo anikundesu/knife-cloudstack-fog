@@ -166,7 +166,12 @@ class Chef
 				bootstrap.config[:environment] = config[:environment]
 				# may be needed for vpc_mode
 				bootstrap.config[:no_host_key_verify] = config[:no_host_key_verify]
-				bootstrap
+				begin
+					bootstrap
+				rescue
+					sleep @initial_sleep_delay
+					retry
+				end
 			end
 
 			def vpc_mode?
@@ -191,9 +196,9 @@ class Chef
 			def tunnel_test_ssh(hostname, &block)
 				gw_host, gw_user = config[:ssh_gateway].split('@').reverse
 				gw_host, gw_port = gw_host.split(':')
+				Chef::Log.debug("Connecting to #{hostname} via #{gw_host} over port #{gw_port}.")
 				gateway = Net::SSH::Gateway.new(gw_host, gw_user, :port => gw_port || 22)
 				status = false
-				Chef::Log.debug("Connecting to #{hostname} via #{gw_host} over port #{gw_port}.")
 				gateway.open(hostname, config[:ssh_port]) do |local_tunnel_port|
 					status = tcp_test_ssh('localhost', local_tunnel_port, &block)
 					Chef::Log.debug "Opened local port #{local_tunnel_port} to tunnel the connection."
@@ -204,6 +209,9 @@ class Chef
 					false
 				rescue Errno::EPERM, Errno::ETIMEDOUT
 					false
+				rescue Errno::Disconnect
+					sleep @initial_sleep_delay
+					retry
 			end
 
 			def wait_for_direct_sshd(hostname, ssh_port)
@@ -241,6 +249,9 @@ class Chef
 					false
 				rescue Errno::EPERM, Errno::ETIMEDOUT
 					false
+				rescue Errno::Disconnect
+					sleep @initial_sleep_delay
+					retry
 				ensure
 				tcp_socket && tcp_socket.close
 			end
@@ -431,6 +442,7 @@ class Chef
 					wait_for_sshd(ssh_connect_host)
 
 					puts("#{ui.color("Waiting for password/keys to sync.", :magenta)}")
+					sleep @initial_sleep_delay
 					sleep @initial_sleep_delay
 					sleep @initial_sleep_delay
 
