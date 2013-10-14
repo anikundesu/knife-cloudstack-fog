@@ -1,11 +1,11 @@
 language: ruby
 script: bundle exec rake build
 rvm:
+  - 1.9.2
   - 1.9.3
   - 2.0.0
-  - jruby-19mode
   - ruby-head
-
+  
 env:
   - RUBYGEMS_VERSION=2.0.3
   - RUBYGEMS_VERSION=1.8.25
@@ -17,7 +17,6 @@ before_install:
 matrix:
   allow_failures:
     - rvm: ruby-head
-    - rvm: jruby-19mode
   exclude:
     - rvm: 2.0.0
       env: RUBYGEMS_VERSION=1.8.25

@@ -180,6 +180,7 @@ class Chef
 			end
 
 			def wait_for_tunnelled_sshd(hostname)
+				Chef::Log.debug("Connecting to #{hostname} via wait_for_tunnelled_sshd")
 				print("#{ui.color(".", :magenta)}")
 				print("#{ui.color(".", :magenta)}") until tunnel_test_ssh(ssh_connect_host) {
 					sleep @initial_sleep_delay ||= (vpc_mode? ? 40 : 10)
@@ -192,8 +193,10 @@ class Chef
 				gw_host, gw_port = gw_host.split(':')
 				gateway = Net::SSH::Gateway.new(gw_host, gw_user, :port => gw_port || 22)
 				status = false
+				Chef::Log.debug("Connecting to #{hostname} via #{gw_host} over port #{gw_port}.")
 				gateway.open(hostname, config[:ssh_port]) do |local_tunnel_port|
 					status = tcp_test_ssh('localhost', local_tunnel_port, &block)
+					Chef::Log.debug "Opened local port #{local_tunnel_port} to tunnel the connection."
 				end
 				status
 				rescue SocketError, Errno::ECONNREFUSED, Errno::EHOSTUNREACH, Errno::ENETUNREACH, IOError
@@ -204,6 +207,7 @@ class Chef
 			end
 
 			def wait_for_direct_sshd(hostname, ssh_port)
+				Chef::Log.debug("Connecting directly to #{hostname} over port #{ssh_port}")
 				print("#{ui.color(".", :magenta)}") until tcp_test_ssh(ssh_connect_host, ssh_port) {
 					sleep @initial_sleep_delay ||= (vpc_mode? ? 40 : 10)
 					puts("#{ui.color(". Done.", :magenta)}")
