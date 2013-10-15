@@ -21,6 +21,9 @@ require 'socket'
 require 'net/ssh/multi'
 require 'chef/json_compat'
 require 'chef/knife/cloudstack_base'
+require 'chef/knife/ssh'
+Chef::Knife::Ssh.load_deps
+require 'pry'
 
 class Chef
 	class Knife
@@ -107,7 +110,7 @@ class Chef
 						:long => "--ssh-port PORT",
 						:description => "The port which SSH should be listening on. If unspecified, will default to 22."
 
-			option  :server_name,
+			option  :server_display_name,
 						:short => "-N NAME",
 						:long => "--display-name NAME",
 						:description => "The instance display name"
@@ -157,7 +160,7 @@ class Chef
 				bootstrap.config[:ssh_password] = password
 				bootstrap.config[:ssh_gateway] = config[:ssh_gateway]
 				bootstrap.config[:identity_file] = locate_config_value(:identity_file)
-				bootstrap.config[:chef_node_name] = config[:server_name] if config[:server_name]
+				bootstrap.config[:chef_node_name] = config[:server_display_name] if config[:server_display_name]
 				bootstrap.config[:prerelease] = config[:prerelease]
 				bootstrap.config[:bootstrap_version] = locate_config_value(:bootstrap_version)
 				bootstrap.config[:distro] = locate_config_value(:distro)
@@ -228,8 +231,8 @@ class Chef
 					"zoneid" => locate_config_value(:cloudstack_zoneid)
 				}
 
-				if locate_config_value(:server_name) != nil
-					server_def["displayname"] = locate_config_value(:server_name)
+				if locate_config_value(:server_display_name) != nil
+					server_def["displayname"] = locate_config_value(:server_display_name)
 				end
 
 				if locate_config_value(:host_name) != nil
@@ -278,7 +281,7 @@ class Chef
       def knife_ssh
         ssh = Chef::Knife::Ssh.new
         ssh.ui = ui
-        ssh.name_args = [ server_name, ssh_command ]
+        ssh.name_args = [ @primary_ip, ssh_command ]
         ssh.config[:ssh_user] = Chef::Config[:knife][:ssh_user] || config[:ssh_user]
         ssh.config[:ssh_password] = config[:ssh_password]
         ssh.config[:ssh_port] = Chef::Config[:knife][:ssh_port] || config[:ssh_port]
@@ -289,6 +292,43 @@ class Chef
         ssh.config[:host_key_verify] = Chef::Config[:knife][:host_key_verify] || config[:host_key_verify]
         ssh.config[:on_error] = :raise
         ssh
+      end
+
+      def find_template(template=nil)
+        # Are we bootstrapping using an already shipped template?
+        if config[:template_file]
+          bootstrap_files = config[:template_file]
+        else
+          bootstrap_files = []
+          bootstrap_files << File.join(File.dirname(__FILE__), 'bootstrap', "#{config[:distro]}.erb")
+          bootstrap_files << File.join(Knife.chef_config_dir, "bootstrap", "#{config[:distro]}.erb") if Knife.chef_config_dir
+          bootstrap_files << File.join(ENV['HOME'], '.chef', 'bootstrap', "#{config[:distro]}.erb") if ENV['HOME']
+          bootstrap_files << Gem.find_files(File.join("chef","knife","bootstrap","#{config[:distro]}.erb"))
+          bootstrap_files.flatten!
+        end
+
+        template = Array(bootstrap_files).find do |bootstrap_template|
+          Chef::Log.debug("Looking for bootstrap template in #{File.dirname(bootstrap_template)}")
+          File.exists?(bootstrap_template)
+        end
+
+        unless template
+          ui.info("Can not find bootstrap definition for #{config[:distro]}")
+          raise Errno::ENOENT
+        end
+
+        Chef::Log.debug("Found bootstrap template in #{File.dirname(template)}")
+
+        template
+      end
+
+      def render_template(template=nil)
+        context = Knife::Core::BootstrapContext.new(config, config[:run_list], Chef::Config)
+        Erubis::Eruby.new(template).evaluate(context)
+      end
+
+      def read_template
+        IO.read(@template_file).chomp
       end
 
       def knife_ssh_with_password_auth
@@ -315,6 +355,9 @@ class Chef
 
 				@initial_sleep_delay = 10				
 				@sshport = 22
+
+				config[:host_key_verify] = false
+
 				if locate_config_value(:ssh_port) != nil
 					@sshport = locate_config_value(:ssh_port).to_i
 				end
@@ -349,14 +392,14 @@ class Chef
 
 					@server = server_start['queryasyncjobresultresponse']['jobresult']['virtualmachine']
 
-					server_name = @server['displayname']
+					server_display_name = @server['displayname']
 					server_id = @server['name']
 					server_serviceoffering = @server['serviceofferingname']
 					server_template = @server['templatename']
 					if @server['password'] != nil
-						ssh_password = @server['password']
+						config[:ssh_password] = @server['password']
 					else
-						ssh_password = locate_config_value(:ssh_password)
+						config[:ssh_password] = locate_config_value(:ssh_password)
 					end
 
 					ssh_user = locate_config_value(:ssh_user)
@@ -379,16 +422,25 @@ class Chef
 						@sshport = pubport
 					end
 
-
-
 					Chef::Log.debug("Connecting over port #{@sshport}")
-
+					config[:ssh_port] = @sshport
+					config[:server_name] = @primary_ip
+					@template_file = find_template(config[:bootstrap_template])
+					
 					puts "\n\n"
-					puts "#{ui.color("Name", :cyan)}: #{server_name}"
+					puts "#{ui.color("Name", :cyan)}: #{server_display_name}"
 					puts "#{ui.color("Primary IP", :cyan)}: #{@primary_ip}"
 					puts "#{ui.color("Username", :cyan)}: #{ssh_user}"
-					puts "#{ui.color("Password", :cyan)}: #{ssh_password}"
+					puts "#{ui.color("Password", :cyan)}: #{config[:ssh_password]}"
 
+					print "#{ui.color("Waiting for SSH.", :magenta)}"
+					if config[:ssh_gateway]
+						Chef::Log.debug("Using SSH Gateway: #{config[:ssh_gateway]}")
+						sleep @initial_sleep_delay
+						print "#{ui.color(".", :magenta)}"
+						sleep @initial_sleep_delay
+						print "#{ui.color(".", :magenta)}"
+					end
 					begin
 						knife_ssh.run
 					rescue Net::SSH::AuthenticationFailed
@@ -396,27 +448,46 @@ class Chef
 							ui.info("Failed to authenticate #{config[:ssh_user]} - trying password auth")
 							knife_ssh_with_password_auth.run
 						end
-					end
-
-					sleep @initial_sleep_delay
-					sleep @initial_sleep_delay
-					sleep @initial_sleep_delay
-
-					Chef::Log.debug("Connnecting to #{@server} via #{ssh_connect_host} and bootstrapping Chef.")
-
-					bootstrap_for_node(@server,ssh_connect_host).run
+					rescue Errno::ECONNREFUSED
+						sleep @initial_sleep_delay
+						print "#{ui.color(".", :magenta)}"
+						retry
+					rescue SocketError
+						sleep @initial_sleep_delay
+						print "#{ui.color(".", :magenta)}"
+						retry
+					rescue Errno::ETIMEDOUT
+						sleep @initial_sleep_delay
+						print "#{ui.color(".", :magenta)}"
+						retry
+					rescue Errno::EPERM
+						sleep @initial_sleep_delay
+						print "#{ui.color(".", :magenta)}"
+						retry
+					rescue Errno::EHOSTUNREACH
+						sleep @initial_sleep_delay
+						print "#{ui.color(".", :magenta)}"
+						retry
+					rescue Errno::ENETUNREACH
+						sleep @initial_sleep_delay
+						print "#{ui.color(".", :magenta)}"
+						retry
+					rescue
+						puts caller
+						binding.pry
+					end			
 
 					Chef::Log.debug("#{@server}")
 
 					puts "\n"
-					puts "#{ui.color("Instance Name", :green)}: #{server_name}"
+					puts "#{ui.color("Instance Name", :green)}: #{server_display_name}"
 					puts "#{ui.color("Instance ID", :green)}: #{server_id}"
 					puts "#{ui.color("Service Offering", :green)}: #{server_serviceoffering}"
 					puts "#{ui.color("Template", :green)}: #{server_template}"
 					puts "#{ui.color("Public IP Address", :green)}: #{@primary_ip}"
 					puts "#{ui.color("Port", :green)}: #{@sshport}"
 					puts "#{ui.color("User", :green)}: #{ssh_user}"
-					puts "#{ui.color("Password", :green)}: #{ssh_password}"
+					puts "#{ui.color("Password", :green)}: #{config[:ssh_password]}"
 					puts "#{ui.color("Environment", :green)}: #{config[:environment] || '_default'}"
 					puts "#{ui.color("Run List", :green)}: #{config[:run_list].join(', ')}"
 				end
