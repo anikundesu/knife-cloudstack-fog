@@ -23,7 +23,6 @@ require 'chef/json_compat'
 require 'chef/knife/cloudstack_base'
 require 'chef/knife/ssh'
 Chef::Knife::Ssh.load_deps
-require 'pry'
 
 class Chef
 	class Knife
@@ -474,7 +473,6 @@ class Chef
 						retry
 					rescue
 						puts caller
-						binding.pry
 					end			
 
 					Chef::Log.debug("#{@server}")
