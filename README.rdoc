@@ -1,6 +1,6 @@
 {<img src="https://badge.fury.io/rb/knife-cloudstack-fog.png" alt="Gem Version" />}[http://badge.fury.io/rb/knife-cloudstack-fog]
 {<img src="https://www.travis-ci.org/fifthecho/knife-cloudstack-fog.png?branch=refactor_ssh" alt="Build Status" />}[https://www.travis-ci.org/fifthecho/knife-cloudstack-fog]
-
+{<img src="https://gemnasium.com/fifthecho/knife-cloudstack-fog.png" alt="Dependency Status" />}[https://gemnasium.com/fifthecho/knife-cloudstack-fog]
 
 = Knife Cloudstack
 
