@@ -31,6 +31,8 @@ class Chef
           puts "#{ui.color("Please provide an Instance ID.", :red)}"
         end
 
+        jobs = {}
+
         @name_args.each do |instance_id|
           response = connection.list_virtual_machines('name' => instance_id)
           instance_name = response['listvirtualmachinesresponse']['virtualmachine'].first['name']
@@ -48,22 +50,26 @@ class Chef
             server = connection.start_virtual_machine('id' => real_instance_id)
           end
           jobid = server['startvirtualmachineresponse'].fetch('jobid')
-          server_start = connection.query_async_job_result('jobid'=>jobid)
-          print "#{ui.color("Waiting for server", :magenta)}"
-          while server_start['queryasyncjobresultresponse'].fetch('jobstatus') != 1
-            print "#{ui.color(".", :magenta)}"
-            sleep(1)
-            server_start = connection.query_async_job_result('jobid'=>jobid)
-          end
-          puts "\n\n"
 
-          ui.warn("Started server #{instance_name}")
+          jobs[instance_id] = jobid
+        end
+
+        print "#{ui.color("Waiting for servers", :magenta)}"
+        until jobs.empty?
+          jobs.each do |instance_id, jobid|
+            server_start = connection.query_async_job_result('jobid'=>jobid)
+            if server_start['queryasyncjobresultresponse'].fetch('jobstatus') == 1
+              jobs.delete(instance_id)
+
+              puts "\n\n"
+              ui.warn("Started server #{instance_id}")
+            else
+              print "#{ui.color(".", :magenta)}"
+              sleep(1)
+            end
+          end
         end
       end
-
-
-
-
     end
   end
 end
