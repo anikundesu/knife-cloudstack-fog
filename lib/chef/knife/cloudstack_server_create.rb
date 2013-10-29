@@ -477,6 +477,7 @@ class Chef
 						retry
 					rescue
 						puts caller
+						puts $!.inspect
 					end			
 
 					Chef::Log.debug("#{@server}")
