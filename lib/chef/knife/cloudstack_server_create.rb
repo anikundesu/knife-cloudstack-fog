@@ -471,7 +471,7 @@ class Chef
 						sleep @initial_sleep_delay
 						print "#{ui.color(".", :magenta)}"
 						retry
-					rescue Net::SSH:Disconnect
+					rescue Net::SSH::Disconnect
 						sleep @initial_sleep_delay
 						print "#{ui.color(".", :magenta)}"
 						retry
