@@ -277,75 +277,75 @@ class Chef
 				server_def
 			end
 
-      def knife_ssh
-        ssh = Chef::Knife::Ssh.new
-        ssh.ui = ui
-        ssh.name_args = [ @primary_ip, ssh_command ]
-        ssh.config[:ssh_user] = Chef::Config[:knife][:ssh_user] || config[:ssh_user]
-        ssh.config[:ssh_password] = config[:ssh_password]
-        ssh.config[:ssh_port] = Chef::Config[:knife][:ssh_port] || config[:ssh_port]
-        ssh.config[:ssh_gateway] = Chef::Config[:knife][:ssh_gateway] || config[:ssh_gateway]
-        ssh.config[:forward_agent] = Chef::Config[:knife][:forward_agent] || config[:forward_agent]
-        ssh.config[:identity_file] = Chef::Config[:knife][:identity_file] || config[:identity_file]
-        ssh.config[:manual] = true
-        ssh.config[:host_key_verify] = Chef::Config[:knife][:host_key_verify] || config[:host_key_verify]
-        ssh.config[:on_error] = :raise
-        ssh
-      end
+			def knife_ssh
+				ssh = Chef::Knife::Ssh.new
+				ssh.ui = ui
+				ssh.name_args = [ @primary_ip, ssh_command ]
+				ssh.config[:ssh_user] = Chef::Config[:knife][:ssh_user] || config[:ssh_user]
+				ssh.config[:ssh_password] = config[:ssh_password]
+				ssh.config[:ssh_port] = Chef::Config[:knife][:ssh_port] || config[:ssh_port]
+				ssh.config[:ssh_gateway] = Chef::Config[:knife][:ssh_gateway] || config[:ssh_gateway]
+				ssh.config[:forward_agent] = Chef::Config[:knife][:forward_agent] || config[:forward_agent]
+				ssh.config[:identity_file] = Chef::Config[:knife][:identity_file] || config[:identity_file]
+				ssh.config[:manual] = true
+				ssh.config[:host_key_verify] = Chef::Config[:knife][:host_key_verify] || config[:host_key_verify]
+				ssh.config[:on_error] = :raise
+				ssh
+			end
 
-      def find_template(template=nil)
-        # Are we bootstrapping using an already shipped template?
-        if config[:template_file]
-          bootstrap_files = config[:template_file]
-        else
-          bootstrap_files = []
-          bootstrap_files << File.join(File.dirname(__FILE__), 'bootstrap', "#{config[:distro]}.erb")
-          bootstrap_files << File.join(Knife.chef_config_dir, "bootstrap", "#{config[:distro]}.erb") if Knife.chef_config_dir
-          bootstrap_files << File.join(ENV['HOME'], '.chef', 'bootstrap', "#{config[:distro]}.erb") if ENV['HOME']
-          bootstrap_files << Gem.find_files(File.join("chef","knife","bootstrap","#{config[:distro]}.erb"))
-          bootstrap_files.flatten!
-        end
+			def find_template(template=nil)
+				# Are we bootstrapping using an already shipped template?
+				if config[:template_file]
+					bootstrap_files = config[:template_file]
+				else
+					bootstrap_files = []
+					bootstrap_files << File.join(File.dirname(__FILE__), 'bootstrap', "#{config[:distro]}.erb")
+					bootstrap_files << File.join(Knife.chef_config_dir, "bootstrap", "#{config[:distro]}.erb") if Knife.chef_config_dir
+					bootstrap_files << File.join(ENV['HOME'], '.chef', 'bootstrap', "#{config[:distro]}.erb") if ENV['HOME']
+					bootstrap_files << Gem.find_files(File.join("chef","knife","bootstrap","#{config[:distro]}.erb"))
+					bootstrap_files.flatten!
+				end
 
-        template = Array(bootstrap_files).find do |bootstrap_template|
-          Chef::Log.debug("Looking for bootstrap template in #{File.dirname(bootstrap_template)}")
-          File.exists?(bootstrap_template)
-        end
+				template = Array(bootstrap_files).find do |bootstrap_template|
+					Chef::Log.debug("Looking for bootstrap template in #{File.dirname(bootstrap_template)}")
+					File.exists?(bootstrap_template)
+				end
 
-        unless template
-          ui.info("Can not find bootstrap definition for #{config[:distro]}")
-          raise Errno::ENOENT
-        end
+				unless template
+					ui.info("Can not find bootstrap definition for #{config[:distro]}")
+					raise Errno::ENOENT
+				end
 
-        Chef::Log.debug("Found bootstrap template in #{File.dirname(template)}")
+				Chef::Log.debug("Found bootstrap template in #{File.dirname(template)}")
 
-        template
-      end
+				template
+			end
 
-      def render_template(template=nil)
-        context = Knife::Core::BootstrapContext.new(config, config[:run_list], Chef::Config)
-        Erubis::Eruby.new(template).evaluate(context)
-      end
+			def render_template(template=nil)
+				context = Knife::Core::BootstrapContext.new(config, config[:run_list], Chef::Config)
+				Erubis::Eruby.new(template).evaluate(context)
+			end
 
-      def read_template
-        IO.read(@template_file).chomp
-      end
+			def read_template
+				IO.read(@template_file).chomp
+			end
 
-      def knife_ssh_with_password_auth
-        ssh = knife_ssh
-        ssh.config[:identity_file] = nil
-        ssh.config[:ssh_password] = ssh.get_password
-        ssh
-      end
+			def knife_ssh_with_password_auth
+				ssh = knife_ssh
+				ssh.config[:identity_file] = nil
+				ssh.config[:ssh_password] = ssh.get_password
+				ssh
+			end
 
-      def ssh_command
-        command = render_template(read_template)
+			def ssh_command
+				command = render_template(read_template)
 
-        if config[:use_sudo]
-          command = config[:use_sudo_password] ? "echo #{config[:ssh_password]} | sudo -S #{command}" : "sudo #{command}"
-        end
+				if config[:use_sudo]
+					command = config[:use_sudo_password] ? "echo #{config[:ssh_password]} | sudo -S #{command}" : "sudo #{command}"
+				end
 
-        command
-      end
+				command
+			end
 
 			def run
 				$stdout.sync = true
@@ -471,6 +471,10 @@ class Chef
 						sleep @initial_sleep_delay
 						print "#{ui.color(".", :magenta)}"
 						retry
+					rescue Net::SSH:Disconnect
+						sleep @initial_sleep_delay
+						print "#{ui.color(".", :magenta)}"
+						retry
 					rescue
 						puts caller
 					end			
@@ -491,7 +495,6 @@ class Chef
 				end
 
 			end
-
 		end
 	end
 end
