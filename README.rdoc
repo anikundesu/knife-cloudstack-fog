@@ -1,5 +1,5 @@
 {<img src="https://badge.fury.io/rb/knife-cloudstack-fog.png" alt="Gem Version" />}[http://badge.fury.io/rb/knife-cloudstack-fog]
-{<img src="https://www.travis-ci.org/fifthecho/knife-cloudstack-fog.png?branch=master" alt="Build Status" />}[https://www.travis-ci.org/fifthecho/knife-cloudstack-fog]
+{<img src="https://travis-ci.org/fifthecho/knife-cloudstack-fog.png?branch=master" alt="Build Status" />}[https://travis-ci.org/fifthecho/knife-cloudstack-fog]
 {<img src="https://gemnasium.com/fifthecho/knife-cloudstack-fog.png" alt="Dependency Status" />}[https://gemnasium.com/fifthecho/knife-cloudstack-fog]
 
 = Knife Cloudstack
