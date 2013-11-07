@@ -35,40 +35,45 @@ class Chef
         end
 
         jobs = {}
+        batch_size = 5
 
-        @name_args.each do |instance_id|
-          response = connection.list_virtual_machines('name' => instance_id)
-          instance_name = response['listvirtualmachinesresponse']['virtualmachine'].first['name']
-          instance_ip = response['listvirtualmachinesresponse']['virtualmachine'].first['nic'].first['ipaddress']
-          real_instance_id = response['listvirtualmachinesresponse']['virtualmachine'].first['id']
-          puts "#{ui.color("Name", :red)}: #{instance_name}"
-          puts "#{ui.color("Public IP", :red)}: #{instance_ip}"
-          puts "\n"
-          confirm("#{ui.color("Do you really want to stop this server", :red)}")
+        @name_args.each_slice(batch_size) do |batch|
+          batch.each do |instance_id|
+            response = connection.list_virtual_machines('name' => instance_id)
+            instance_name = response['listvirtualmachinesresponse']['virtualmachine'].first['name']
+            instance_ip = response['listvirtualmachinesresponse']['virtualmachine'].first['nic'].first['ipaddress']
+            real_instance_id = response['listvirtualmachinesresponse']['virtualmachine'].first['id']
+            puts "#{ui.color("Name", :red)}: #{instance_name}"
+            puts "#{ui.color("Public IP", :red)}: #{instance_ip}"
+            puts "\n"
+            confirm("#{ui.color("Do you really want to stop this server", :red)}")
 
 
-          if locate_config_value(:force)
-            server = connection.stop_virtual_machine('id' => real_instance_id, 'forced' => true)
-          else
-            server = connection.stop_virtual_machine('id' => real_instance_id)
-          end
-          jobid = server['stopvirtualmachineresponse'].fetch('jobid')
-
-          jobs[instance_id] = jobid
-        end
-
-        print "#{ui.color("Waiting for servers", :magenta)}"
-        until jobs.empty?
-          jobs.each do |instance_id, jobid|
-            server_stop = connection.query_async_job_result('jobid'=>jobid)
-            if server_stop['queryasyncjobresultresponse'].fetch('jobstatus') == 1
-              jobs.delete(instance_id)
-
-              puts "\n\n"
-              ui.warn("Stopped server #{instance_id}")
+            if locate_config_value(:force)
+              server = connection.stop_virtual_machine('id' => real_instance_id, 'forced' => true)
             else
-              print "#{ui.color(".", :magenta)}"
-              sleep(1)
+              server = connection.stop_virtual_machine('id' => real_instance_id)
+            end
+            jobid = server['stopvirtualmachineresponse'].fetch('jobid')
+
+            jobs[instance_id] = jobid
+          end
+
+
+          print "#{ui.color("Waiting for servers", :magenta)}"
+          until jobs.empty?
+            jobs.each do |instance_id, jobid|
+              server_stop = connection.query_async_job_result('jobid'=>jobid)
+
+              if server_stop['queryasyncjobresultresponse'].fetch('jobstatus') == 1
+                jobs.delete(instance_id)
+
+                puts "\n\n"
+                ui.warn("Stopped server #{instance_id}")
+              else
+                print "#{ui.color(".", :magenta)}"
+                sleep(1)
+              end
             end
           end
         end
