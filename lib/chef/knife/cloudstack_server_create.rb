@@ -289,6 +289,11 @@ class Chef
 				ssh.config[:manual] = true
 				ssh.config[:host_key_verify] = Chef::Config[:knife][:host_key_verify] || config[:host_key_verify]
 				ssh.config[:on_error] = :raise
+				Chef::Log.debug("SSH User: #{ssh.config[:ssh_user]}")
+				Chef::Log.debug("SSH Password: #{ssh.config[:ssh_password]}")
+				Chef::Log.debug("SSH Port: #{ssh.config[:ssh_port]}")
+				Chef::Log.debug("SSH Gateway: #{ssh.config[:ssh_gateway]}")
+				Chef::Log.debug("SSH Identity File: #{ssh.config[:identity_file]}")
 				ssh
 			end
 
@@ -332,6 +337,7 @@ class Chef
 			def knife_ssh_with_password_auth
 				ssh = knife_ssh
 				ssh.config[:identity_file] = nil
+				Chef::Log.debug("Private Key failed or not specified. Trying password of #{ssh.get_password}")
 				ssh.config[:ssh_password] = ssh.get_password
 				ssh
 			end
@@ -444,8 +450,11 @@ class Chef
 					rescue Net::SSH::AuthenticationFailed
 						unless config[:ssh_password]
 							ui.info("Failed to authenticate #{config[:ssh_user]} - trying password auth")
-							knife_ssh_with_password_auth.run
+							knife_ssh_with_password_auth
 						end
+						sleep @initial_sleep_delay
+						print "#{ui.color(".", :magenta)}"
+						retry
 					rescue Errno::ECONNREFUSED
 						sleep @initial_sleep_delay
 						print "#{ui.color(".", :magenta)}"
@@ -471,6 +480,10 @@ class Chef
 						print "#{ui.color(".", :magenta)}"
 						retry
 					rescue Net::SSH::Disconnect
+						sleep @initial_sleep_delay
+						print "#{ui.color(".", :magenta)}"
+						retry
+					rescue Net::SSH::AuthenticationFailed
 						sleep @initial_sleep_delay
 						print "#{ui.color(".", :magenta)}"
 						retry
