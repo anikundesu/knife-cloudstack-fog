@@ -43,7 +43,7 @@ class Chef
 						:description => "The CloudStack template ID for the server."
 
 			option  :cloudstack_zoneid,
-						:short => "-z ZONEID",
+						:short => "-Z ZONEID",
 						:long => "--zoneid ZONE",
 						:description => "The CloudStack zone ID for the server."
 
@@ -130,7 +130,6 @@ class Chef
 						:description => "Specifies either the Disk Offering ID for the ROOT disk for an ISO template, or a DATA disk."
 
 			option  :size,
-						:short => "-Z SIZE",
 						:long => "--size SIZE",
 						:description => "Specifies the arbitrary Disk Size for DATADISK volume in GB. Must be passed with custom size Disk Offering ID."
 
