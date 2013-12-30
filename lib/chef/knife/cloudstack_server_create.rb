@@ -450,7 +450,7 @@ class Chef
 					rescue Net::SSH::AuthenticationFailed
 						unless config[:ssh_password]
 							ui.info("Failed to authenticate #{config[:ssh_user]} - trying password auth")
-							knife_ssh_with_password_auth
+							knife_ssh_with_password_auth.run
 						end
 						sleep @initial_sleep_delay
 						print "#{ui.color(".", :magenta)}"
