@@ -78,8 +78,8 @@ class Chef
           template['hypervisor'] = ' ' if template['hypervisor'].nil?
           template_list << template['hypervisor']
 
-          template_size = template['size']
-          template_size = (template_size/1024/1024/1024)
+          template_size = template['size'].to_i
+          template_size = template_size / 1024 / 1024 / 1024
           template_list << template_size.to_s
 
           template_list << template['zonename']
