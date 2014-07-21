@@ -40,7 +40,7 @@ class Chef
           puts "#{ui.color("Public IP", :red)}: #{instance_ip}"
           puts "\n"
           confirm("#{ui.color("Do you really want to destroy this server", :red)}")
-          connection.destroy_virtual_machine('id' => real_instance_id)
+          connection.destroy_virtual_machine(instance_id)
           ui.warn("Destroyed server #{instance_name}")
         end
       end

@@ -106,7 +106,7 @@ class Chef
         hypervisor = locate_config_value(:hypervisor)
         templateid = locate_config_value(:templateid)
 
-        settings = connection.list_templates('templatefilter' => filter)
+        settings = connection.list_templates(filter)
         if response = settings['listtemplatesresponse']
           Chef::Log.debug("Response: #{response}")
           if templates = response['template']
