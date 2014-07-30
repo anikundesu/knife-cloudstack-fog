@@ -143,6 +143,11 @@ class Chef
             :long => "--ssh-gateway GATEWAY",
             :description => "The ssh gateway server. Connection is defined as USERNAME@HOST:PORT",
             :proc => Proc.new { |key| Chef::Config[:knife][:ssh_gateway] = key }
+      option  :user_data,
+            :long => "--user-data USER_DATA_FILE",
+            :description => "The user data file to provision the instance with",
+            :proc => Proc.new { |m| Chef::Config[:knife][:cloudstack_user_data] },
+            :default => nil
 
       # def bootstrap_for_node(host, user, password)
       def bootstrap_for_node(server, ssh_host)
@@ -262,6 +267,14 @@ class Chef
 
         if locate_config_value(:size) != nil
           server_def["size"] = locate_config_value(:size)
+        end
+
+        if locate_config_value(:user_data) != nil
+          begin
+            server_def["userdata"] = File.read(Chef::Config[:knife][:cloudstack_user_data])
+          rescue
+            ui.warn("Cannot read #{Chef::Config[:knife][:cloudstack_user_data]}: #{$!.inspect}. Ignoring")
+          end
         end
 
         server_def
