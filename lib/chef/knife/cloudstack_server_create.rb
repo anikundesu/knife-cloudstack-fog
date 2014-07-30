@@ -269,7 +269,7 @@ class Chef
           server_def["size"] = locate_config_value(:size)
         end
 
-        if locate_config_value(:user_data) != nil
+        if locate_config_value(:cloudstack_user_data) != nil
           begin
             server_def["userdata"] = File.read(Chef::Config[:knife][:cloudstack_user_data])
           rescue
