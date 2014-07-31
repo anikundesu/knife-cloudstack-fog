@@ -271,7 +271,7 @@ class Chef
 
         if locate_config_value(:cloudstack_user_data) != nil
           begin
-            server_def["userdata"] = File.read(Chef::Config[:knife][:cloudstack_user_data])
+            server_def["userdata"] = [File.read(Chef::Config[:knife][:cloudstack_user_data])].pack('m')
           rescue
             ui.warn("Cannot read #{Chef::Config[:knife][:cloudstack_user_data]}: #{$!.inspect}. Ignoring")
           end
