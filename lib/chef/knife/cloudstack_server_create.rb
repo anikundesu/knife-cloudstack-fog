@@ -270,8 +270,9 @@ class Chef
         end
 
         if locate_config_value(:cloudstack_user_data) != nil
+          require 'base64'
           begin
-            server_def["userdata"] = [File.read(Chef::Config[:knife][:cloudstack_user_data])].pack('m')
+            server_def["userdata"] = Base64.strict_encode64(File.read(Chef::Config[:knife][:cloudstack_user_data]))
           rescue
             ui.warn("Cannot read #{Chef::Config[:knife][:cloudstack_user_data]}: #{$!.inspect}. Ignoring")
           end
