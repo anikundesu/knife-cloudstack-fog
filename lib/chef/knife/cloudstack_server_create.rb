@@ -146,7 +146,7 @@ class Chef
       option  :user_data,
             :long => "--user-data USER_DATA_FILE",
             :description => "The user data file to provision the instance with",
-            :proc => Proc.new { |m| Chef::Config[:knife][:cloudstack_user_data] },
+            :proc => Proc.new { |m| Chef::Config[:knife][:cloudstack_user_data] = m },
             :default => nil
 
       # def bootstrap_for_node(host, user, password)
