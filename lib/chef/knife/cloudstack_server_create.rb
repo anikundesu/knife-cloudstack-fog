@@ -148,6 +148,10 @@ class Chef
             :description => "The user data file to provision the instance with",
             :proc => Proc.new { |m| Chef::Config[:knife][:cloudstack_user_data] = m },
             :default => nil
+      option  :keyboard,
+            :long => "--keyboard KEYBOARD_TYPE",
+            :description => "An optional keyboard device type for the virtual machine",
+            :default => nil
 
       # def bootstrap_for_node(host, user, password)
       def bootstrap_for_node(server, ssh_host)
@@ -276,6 +280,9 @@ class Chef
           rescue
             ui.warn("Cannot read #{Chef::Config[:knife][:cloudstack_user_data]}: #{$!.inspect}. Ignoring")
           end
+        end
+        if locate_config_value(:keyboard) != nil
+          server_def["keyboard"] = locate_config_value(:keyboard)
         end
 
         server_def
