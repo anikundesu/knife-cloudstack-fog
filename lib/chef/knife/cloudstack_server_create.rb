@@ -148,6 +148,10 @@ class Chef
             :description => "The user data file to provision the instance with",
             :proc => Proc.new { |m| Chef::Config[:knife][:cloudstack_user_data] = m },
             :default => nil
+      option  :hypervisor,
+            :long => "--hypervisor HYPERVISOR",
+            :description => "the hypervisor on which to deploy the virtual machine",
+            :default => nil
 
       # def bootstrap_for_node(host, user, password)
       def bootstrap_for_node(server, ssh_host)
@@ -267,6 +271,10 @@ class Chef
 
         if locate_config_value(:size) != nil
           server_def["size"] = locate_config_value(:size)
+        end
+
+        if locate_config_value(:hypervisor) != nil
+          server_def["hypervisor"] = locate_config_value(:hypervisor)
         end
 
         if locate_config_value(:cloudstack_user_data) != nil
