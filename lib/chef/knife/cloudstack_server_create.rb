@@ -151,6 +151,9 @@ class Chef
       option  :keyboard,
             :long => "--keyboard KEYBOARD_TYPE",
             :description => "An optional keyboard device type for the virtual machine",
+      option  :hypervisor,
+            :long => "--hypervisor HYPERVISOR",
+            :description => "the hypervisor on which to deploy the virtual machine",
             :default => nil
 
       # def bootstrap_for_node(host, user, password)
@@ -271,6 +274,10 @@ class Chef
 
         if locate_config_value(:size) != nil
           server_def["size"] = locate_config_value(:size)
+        end
+
+        if locate_config_value(:hypervisor) != nil
+          server_def["hypervisor"] = locate_config_value(:hypervisor)
         end
 
         if locate_config_value(:cloudstack_user_data) != nil
