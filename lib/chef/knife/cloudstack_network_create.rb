@@ -78,13 +78,14 @@ class Chef
         validate!
 
         netoptions = {}
+        mandatoryoptions = {}
 
           if (locate_config_value(:name).nil? || locate_config_value(:networkoffering).nil? || locate_config_value(:zone).nil?)
             puts "Name (-n), Service Offering ID (-o), and Zone ID (-z) are required."
           else
-            netoptions['name'] = locate_config_value(:name)
-            netoptions['networkofferingid'] = locate_config_value(:networkoffering)
-            netoptions['zoneid'] = locate_config_value(:zone)
+            mandatoryoptions['name'] = locate_config_value(:name)
+            mandatoryoptions['networkofferingid'] = locate_config_value(:networkoffering)
+            mandatoryoptions['zoneid'] = locate_config_value(:zone)
 
             if locate_config_value(:startip) != nil
               netoptions['startip'] = locate_config_value(:startip)
@@ -107,14 +108,14 @@ class Chef
             end
 
             if locate_config_value(:displaytext) != nil
-              netoptions['displaytext'] = locate_config_value(:displaytext)
+              mandatoryoptions['displaytext'] = locate_config_value(:displaytext)
             else
-              netoptions['displaytext'] = locate_config_value(:name)
+              mandatoryoptions['displaytext'] = locate_config_value(:name)
             end
 
             Chef::Log.debug("Options: #{netoptions}")
 
-            response = connection.create_network(netoptions)
+            response = connection.create_network(mandatoryoptions['displaytext'], mandatoryoptions['name'], mandatoryoptions['networkofferingid'], ,mandatoryoptions['zoneid'] netoptions)
 
             Chef::Log.debug("API Response: #{response}")
 
