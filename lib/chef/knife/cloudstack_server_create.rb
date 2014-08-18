@@ -158,6 +158,12 @@ class Chef
             :long => "--hypervisor HYPERVISOR",
             :description => "the hypervisor on which to deploy the virtual machine",
             :default => nil
+            
+
+      option  :secret_file,
+            :long => "--secret-file FILE",
+            :description => "the path to the file that contains the encryption key",
+            :default => nil
 
       # def bootstrap_for_node(host, user, password)
       def bootstrap_for_node(server, ssh_host)
@@ -181,6 +187,7 @@ class Chef
         bootstrap.config[:use_sudo] = true
         bootstrap.config[:template_file] = locate_config_value(:template_file)
         bootstrap.config[:environment] = config[:environment]
+        bootstrap.config[:secret_file] = locate_config_value(:secret_file)
         # may be needed for vpc_mode
         bootstrap.config[:no_host_key_verify] = config[:no_host_key_verify]
         begin
