@@ -143,14 +143,17 @@ class Chef
             :long => "--ssh-gateway GATEWAY",
             :description => "The ssh gateway server. Connection is defined as USERNAME@HOST:PORT",
             :proc => Proc.new { |key| Chef::Config[:knife][:ssh_gateway] = key }
+
       option  :user_data,
             :long => "--user-data USER_DATA_FILE",
             :description => "The user data file to provision the instance with",
             :proc => Proc.new { |m| Chef::Config[:knife][:cloudstack_user_data] = m },
             :default => nil
+
       option  :keyboard,
             :long => "--keyboard KEYBOARD_TYPE",
-            :description => "An optional keyboard device type for the virtual machine",
+            :description => "An optional keyboard device type for the virtual machine"
+
       option  :hypervisor,
             :long => "--hypervisor HYPERVISOR",
             :description => "the hypervisor on which to deploy the virtual machine",

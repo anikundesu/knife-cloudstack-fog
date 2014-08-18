@@ -115,7 +115,7 @@ class Chef
 
             Chef::Log.debug("Options: #{netoptions}")
 
-            response = connection.create_network(mandatoryoptions['displaytext'], mandatoryoptions['name'], mandatoryoptions['networkofferingid'], ,mandatoryoptions['zoneid'] netoptions)
+            response = connection.create_network(mandatoryoptions['displaytext'], mandatoryoptions['name'], mandatoryoptions['networkofferingid'], mandatoryoptions['zoneid'], netoptions)
 
             Chef::Log.debug("API Response: #{response}")
 
