@@ -62,7 +62,7 @@ class Chef
 
         case mode
         when 'register'
-          response = connection.register_ssh_key_pair(options)
+          response = connection.register_ssh_key_pair(options['publickey'], options['name'])
           sshkeypair = response['registersshkeypairresponse']['keypair']
 
           sshkeypair_list = [
