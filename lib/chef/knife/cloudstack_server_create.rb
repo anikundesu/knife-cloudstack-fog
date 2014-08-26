@@ -165,6 +165,11 @@ class Chef
             :description => "the path to the file that contains the encryption key",
             :default => nil
 
+      option  :use_primary_network,
+            :long => "--use-primary-network",
+            :description => "use the first network in networkids to connect",
+            :default => nil
+
       # def bootstrap_for_node(host, user, password)
       def bootstrap_for_node(server, ssh_host)
         host = server["name"]
@@ -444,6 +449,14 @@ class Chef
 
           if @server['nic'].size > 0
             @primary_ip = @server['nic'].first['ipaddress']
+          end
+          # if the instance has multiple interfaces, use one within first network
+          # ID specified by --networkids. this is an annoying bug in cs 2.2.x.
+          # it returns an array of NICs but the order is random.
+          if locate_config_value(:use_primary_network) != nil && ! locate_config_value(:cloudstack_networkids).empty?
+            primary_networkid = locate_config_value(:cloudstack_networkids).first
+            possible_nics = @server['nic'].select { |x| x['networkid'] == primary_networkid.to_i }
+            @primary_ip = possible_nics.first['ipaddress']
           end
 
           if locate_config_value(:random_ssh_port) != nil
