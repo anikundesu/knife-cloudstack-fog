@@ -18,7 +18,7 @@ Gem::Specification.new do |s|
   s.require_paths = ["lib"]
 
   # s.add_dependency "fog", ">= 1.23.0"
-  s.add_runtime_dependency 'fog', '~> 1.23', '>= 1.23.0'
+  s.add_runtime_dependency 'fog', '~> 1.24', '>= 1.24.0'
 
   # s.add_dependency "chef", ">= 11.12.8"
   s.add_runtime_dependency 'chef', '~> 11.12', '>= 11.12.8'
