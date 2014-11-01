@@ -31,7 +31,7 @@ class Chef
 
       include Knife::CloudstackBase
 
-      banner "knife cloudstack server create -s SERVICEID -t TEMPLATEID -z ZONEID (options)"
+      banner "knife cloudstack server create -s SERVICEID -t TEMPLATEID -Z ZONEID (options)"
 
       option  :cloudstack_serviceid,
             :short => "-s SERVICEID",
