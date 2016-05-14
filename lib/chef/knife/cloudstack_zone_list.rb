@@ -24,8 +24,8 @@ class Chef
 
       include Knife::CloudstackBase
 
-      banner "knife cloudstack zone list (options)"
-            
+      banner "knife cloudstack zone list"
+
       def run
         $stdout.sync = true
 
@@ -57,7 +57,7 @@ class Chef
         puts ui.list(zone_list, :columns_across, 4)
 
       end
-        
+
     end
   end
 end

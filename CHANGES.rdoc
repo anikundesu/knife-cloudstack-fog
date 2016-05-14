@@ -1,5 +1,14 @@
 = Changes
 
+== 2013-15-10 (0.5.0)
+* Removed all SSH specific code and migrated everything to using the knife.ssh methods provided in the knife gem (no more reinvented wheels)
+
+== 2013-14-10 (0.4.0)
+* Added support for random port selection for SSH connections using Isolated Networking or VPC style advanced zones.
+* Added support for SSH gateways based on the code from knife-ec2. This code does not support using SSH config files and 
+  needs to have the gateway host connection information specified as a part of the knife command itself.
+* Apologies for not keeping this updated and I'll work to backfill the changelog.
+
 == 2012-15-03 (0.2.0)
 * Brought in sync with Chirajog's knife-cloudstack plugin. Rewritten to leverage FOG CloudStack support (available in GIT
    gem), HTTP/HTTPS, and Security Groups.

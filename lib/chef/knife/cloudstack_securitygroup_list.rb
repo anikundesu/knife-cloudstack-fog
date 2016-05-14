@@ -44,7 +44,7 @@ class Chef
         if groupname = options[:groupname]
           temp.reject!{|g| g['name'] != groupname}
         end
-        
+
         temp.each do |securitygroup|
           securitygroup_list << securitygroup['id'].to_s
           securitygroup_list << securitygroup['name'].to_s
@@ -68,7 +68,7 @@ class Chef
           end
         end
       end
-            
+
       def run
         $stdout.sync = true
 
@@ -103,22 +103,22 @@ class Chef
             ui.color('Name', :bold),
             ui.color('Description', :bold)
             ]
-                        
+
             if response = connection.list_security_groups['listsecuritygroupsresponse']
               if securitygroups = response['securitygroup']
                 filters = {}
                 filters[:groupid] = groupid unless groupid == 'none'
                 filters[:groupname] = groupname unless groupname == 'none'
                 sg_details_list(securitygroup_list, securitygroup_details, securitygroups, filters)
-                
+
                 puts ui.list(securitygroup_list, :columns_across, 3)
                 puts ui.list(securitygroup_details, :columns_across, 4)
               end
             end
-            
+
         end
       end
-       
+
     end
   end
 end

@@ -20,13 +20,10 @@ require 'chef/knife/cloudstack_base'
 
 class Chef
   class Knife
-    class CloudstackServerStop < Knife
+    class CloudstackServerStart < Knife
 
       include Knife::CloudstackBase
-      banner "knife cloudstack server stop INSTANCE_ID (options)"
-      option  :forced,
-        :short => "-f",
-        :description => "Issue this as a forced stop command."
+      banner "knife cloudstack server start INSTANCE_ID"
 
       def run
 
@@ -43,33 +40,31 @@ class Chef
             instance_name = response['listvirtualmachinesresponse']['virtualmachine'].first['name']
             instance_ip = response['listvirtualmachinesresponse']['virtualmachine'].first['nic'].first['ipaddress']
             real_instance_id = response['listvirtualmachinesresponse']['virtualmachine'].first['id']
-            puts "#{ui.color("Name", :red)}: #{instance_name}"
-            puts "#{ui.color("Public IP", :red)}: #{instance_ip}"
+            puts "#{ui.color("Name", :green)}: #{instance_name}"
+            puts "#{ui.color("Public IP", :green)}: #{instance_ip}"
             puts "\n"
-            confirm("#{ui.color("Do you really want to stop this server", :red)}")
+            confirm("#{ui.color("Do you really want to start this server", :green)}")
 
 
             if locate_config_value(:force)
-              server = connection.stop_virtual_machine('id' => real_instance_id, 'forced' => true)
+              server = connection.start_virtual_machine('id' => real_instance_id, 'forced' => true)
             else
-              server = connection.stop_virtual_machine('id' => real_instance_id)
+              server = connection.start_virtual_machine('id' => real_instance_id)
             end
-            jobid = server['stopvirtualmachineresponse'].fetch('jobid')
+            jobid = server['startvirtualmachineresponse'].fetch('jobid')
 
             jobs[instance_id] = jobid
           end
 
-
           print "#{ui.color("Waiting for servers", :magenta)}"
           until jobs.empty?
             jobs.each do |instance_id, jobid|
-              server_stop = connection.query_async_job_result('jobid'=>jobid)
-
-              if server_stop['queryasyncjobresultresponse'].fetch('jobstatus') == 1
+              server_start = connection.query_async_job_result('jobid'=>jobid)
+              if server_start['queryasyncjobresultresponse'].fetch('jobstatus') == 1
                 jobs.delete(instance_id)
 
                 puts "\n\n"
-                ui.warn("Stopped server #{instance_id}")
+                ui.warn("Started server #{instance_id}")
               else
                 print "#{ui.color(".", :magenta)}"
                 sleep(1)

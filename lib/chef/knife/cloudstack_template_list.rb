@@ -49,17 +49,17 @@ class Chef
               :short => "-T TEMPLATEID",
               :long => "--templateid TEMPLATEID",
               :description => "Limit responses to a single template ID. Default provides all templates.",
-              :default => "all"     
-             
-      
+              :default => "all"
+
+
       def print_templates(template_list,templates,options={})
         temp = templates
 
         if templateid = options[:templateid]
-          temp.reject!{|t| t['id'] != templateid.to_i}
+          temp.reject!{|t| t['id'] != templateid}
         end
         if zoneid = options[:zoneid]
-          temp.reject!{|t| t['zoneid'] != zoneid.to_i}
+          temp.reject!{|t| t['zoneid'] != zoneid}
         end
         if zone = options[:zone]
           temp.reject!{|t| t['zonename'] != zone}
@@ -67,21 +67,27 @@ class Chef
         if hypervisor = options[:hypervisor]
           temp.reject!{|t| t['hypervisor'] != hypervisor}
         end
-        
-        temp.each do |template|
+
+        # Sorting to group by zone ID first, then ID
+
+        sort1 = temp.sort_by { |hsh| hsh["id"] }
+        sorted = sort1.sort_by { |hsh| hsh["zoneid"] }
+
+        sorted.each do |template|
           template_list << template['id'].to_s
           template['hypervisor'] = ' ' if template['hypervisor'].nil?
           template_list << template['hypervisor']
 
-          template_size = template['size']
-          template_size = (template_size/1024/1024/1024)
+          template_size = template['size'].to_i
+          template_size = template_size / 1024 / 1024 / 1024
           template_list << template_size.to_s
 
           template_list << template['zonename']
+          template_list << template['zoneid'].to_s
           template_list << template['name']
         end
       end
-      
+
       def run
         validate!
 
@@ -89,30 +95,32 @@ class Chef
           ui.color('ID', :bold),
           ui.color('Hypervisor', :bold),
           ui.color('Size (in GB)', :bold),
-          ui.color('Zone Location', :bold),
-          ui.color('Name', :bold)          
+          ui.color('Zone Name', :bold),
+          ui.color('Zone ID', :bold),
+          ui.color('Name', :bold)
         ]
-        
+
         filter = locate_config_value(:filter)
         zone = locate_config_value(:zone)
         zoneid = locate_config_value(:zoneid)
         hypervisor = locate_config_value(:hypervisor)
         templateid = locate_config_value(:templateid)
-                
-        settings = connection.list_templates('templatefilter' => filter)
+
+        settings = connection.list_templates(filter)
         if response = settings['listtemplatesresponse']
+          Chef::Log.debug("Response: #{response}")
           if templates = response['template']
             filters = {}
             filters[:hypervisor] = hypervisor unless hypervisor == 'all'
             filters[:zone] = zone unless zone == 'all'
             filters[:zoneid] = zoneid unless zoneid == 'all'
             filters[:templateid] = templateid unless templateid == 'all'
-            
+
             print_templates(template_list,templates,filters)
           end
-          puts ui.list(template_list, :uneven_columns_across, 5)
+          puts ui.list(template_list, :uneven_columns_across, 6)
         end
-        
+
       end
     end
   end

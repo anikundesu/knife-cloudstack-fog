@@ -20,10 +20,10 @@ require 'chef/knife/cloudstack_base'
 
 class Chef
   class Knife
-    class CloudstackServerDelete < Knife
+    class CloudstackServerDestroy < Knife
 
       include Knife::CloudstackBase
-      banner "knife cloudstack server delete INSTANCE_ID"
+      banner "knife cloudstack server destroy INSTANCE_ID"
 
       def run
 
@@ -39,9 +39,9 @@ class Chef
           puts "#{ui.color("Name", :red)}: #{instance_name}"
           puts "#{ui.color("Public IP", :red)}: #{instance_ip}"
           puts "\n"
-          confirm("#{ui.color("Do you really want to delete this server", :red)}")
+          confirm("#{ui.color("Do you really want to destroy this server", :red)}")
           connection.destroy_virtual_machine(instance_id)
-          ui.warn("Deleted server #{instance_name}")
+          ui.warn("Destroyed server #{instance_name}")
         end
       end
 

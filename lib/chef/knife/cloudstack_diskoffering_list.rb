@@ -20,12 +20,12 @@ require 'chef/knife/cloudstack_base'
 
 class Chef
   class Knife
-    class CloudstackDiskofferingsList < Knife
+    class CloudstackDiskofferingList < Knife
 
       include Knife::CloudstackBase
 
-      banner "knife cloudstack diskofferings list (options)"
-            
+      banner "knife cloudstack diskoffering list"
+
       def run
         $stdout.sync = true
 
@@ -51,7 +51,7 @@ class Chef
         puts ui.list(diskoffering_list, :columns_across, 4)
 
       end
-        
+
     end
   end
 end

@@ -20,44 +20,38 @@ require 'chef/knife/cloudstack_base'
 
 class Chef
   class Knife
-    class CloudstackVolumeList < Knife
+    class CloudstackNetworkofferingList < Knife
 
       include Knife::CloudstackBase
 
-      banner "knife cloudstack volume list"
+      banner "knife cloudstack networkoffering list"
 
       def run
         $stdout.sync = true
 
         validate!
 
-        volume_list = [
+        network_list = [
           ui.color('ID', :bold),
           ui.color('Name', :bold),
-          ui.color('Size (in GB)', :bold),
-          ui.color('Type', :bold),
-          ui.color('Virtual Machine', :bold),
-          ui.color('State', :bold)
+          ui.color('Display Name', :bold),
+          ui.color('Traffic Type', :bold),
+          ui.color('State', :bold),
+          ui.color('Service Offering ID', :bold)
         ]
 
-        response = connection.list_volumes['listvolumesresponse']
+        response = connection.list_network_offerings['listnetworkofferingsresponse']
 
-        if volumes = response['volume']
-          volumes.each do |volume|
-            volume_list << volume['id'].to_s
-            volume_list << volume['name'].to_s
-            volume_size = volume['size']
-            volume_size = (volume_size/1024/1024/1024)
-            volume_list << volume_size.to_s
-            volume_list << volume['type']
-            if (volume['vmdisplayname'].nil?)
-              volume_list << ' '
-            else
-              volume_list << volume['vmdisplayname']
-            end
+        if networks = response['networkoffering']
 
-            volume_list << begin
-              state = volume['state'].to_s.downcase
+          networks.each do |networkoffering|
+            # puts networkoffering
+            network_list << networkoffering['id'].to_s
+            network_list << networkoffering['name'].to_s
+            network_list << networkoffering['displaytext'].to_s
+            network_list << networkoffering['traffictype'].to_s
+            network_list << begin
+              state = networkoffering['state'].to_s.downcase
               case state
                 when 'allocated'
                   ui.color(state, :red)
@@ -67,9 +61,11 @@ class Chef
                   ui.color(state, :green)
               end
             end
+            network_list << networkoffering['serviceofferingid'].to_s
           end
-          puts ui.list(volume_list, :uneven_columns_across, 6)
         end
+
+        puts ui.list(network_list, :uneven_columns_across, 6)
 
       end
 

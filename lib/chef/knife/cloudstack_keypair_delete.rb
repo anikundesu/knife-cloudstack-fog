@@ -24,12 +24,12 @@ class Chef
 
       include Knife::CloudstackBase
 
-      banner "knife cloudstack keypair delete NAME [NAME] (options)"
+      banner "knife cloudstack keypair delete NAME"
 
 
       def run
-        if @name_args.nil?
-          puts #{ui.color("Please provide a keypair name.", :red)}
+        if @name_args.nil? || @name_args.empty?
+          puts "#{ui.color("Please provide a keypair name.", :red)}"
         end
 
         @name_args.each do |keypair_name|
@@ -39,7 +39,7 @@ class Chef
           puts "#{ui.color("Name", :red)}: #{real_keypair_name}"
           puts "#{ui.color("Fingerprint", :red)}: #{fingerprint}"
           puts "\n"
-          confirm("#{ui.color("Do you really want to delete this keypair", :red)}")
+          confirm("#{ui.color("Do you really want to delete this keypair?", :red)}")
           connection.delete_ssh_key_pair(real_keypair_name)
           ui.warn("Deleted SSH keypair #{real_keypair_name}")
         end

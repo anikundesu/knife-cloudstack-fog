@@ -1,24 +1,26 @@
+{<img src="https://badge.fury.io/rb/knife-cloudstack-fog.png" alt="Gem Version" />}[http://badge.fury.io/rb/knife-cloudstack-fog]
+{<img src="https://travis-ci.org/fifthecho/knife-cloudstack-fog.png?branch=master" alt="Build Status" />}[https://travis-ci.org/fifthecho/knife-cloudstack-fog]
+{<img src="https://gemnasium.com/fifthecho/knife-cloudstack-fog.png" alt="Dependency Status" />}[https://gemnasium.com/fifthecho/knife-cloudstack-fog]
+
 = Knife Cloudstack
 
 = DESCRIPTION:
 
-This is the unofficial Opscode Knife plugin for Cloudstack Cloud. This plugin gives knife the ability to create, bootstrap, and manage instances in Cloudstack Compute clouds.
+This is the unofficial Opscode Knife plugin for Apache CloudStack / Citrix CloudPlatform Clouds. This plugin gives knife the ability to create, bootstrap, and manage instances in Cloudstack Compute clouds.
 
 = INSTALLATION:
 
 Be sure you are running the latest version Chef. Versions earlier than 0.10.0 don't support plugins:
 
     $ gem install chef
-
-Also ensure you are running the latest version of Fog. Versions earlier than 1.3.1 don't fully support Cloudstack Cloud:
-    
-    $ gem update fog 
  
 This plugin is distributed as a Ruby Gem. To install it, run:
 
     $ gem install knife-cloudstack-fog
 
 Depending on your system's configuration, you may need to run this command with root privileges.
+
+Also, all of these commands have been tested against CloudStack/CloudPlatform 2.2.14 and 3.0.6.
 
 = CONFIGURATION:
 
@@ -53,7 +55,7 @@ This plugin provides the following Knife subcommands.  Specific command options 
 
 == knife cloudstack server create
 
-Provisions a new server in an Cloudstack Compute cloud and then perform a Chef bootstrap (using the SSH protocol).  The goal of the bootstrap is to get Chef installed on the target system so it can run Chef Client with a Chef Server. The main assumption is a baseline OS installation exists (provided by the provisioning). It is primarily intended for Chef Client systems that talk to a Chef server.  By default the server is bootstrapped using the {ubuntu10.04-gems}[https://github.com/opscode/chef/blob/master/chef/lib/chef/knife/bootstrap/ubuntu10.04-gems.erb] template.  This can be overridden using the <tt>-d</tt> or <tt>--template-file</tt> command options.
+Provisions a new server in an Cloudstack Compute cloud and then perform a Chef bootstrap (using the SSH protocol).  The goal of the bootstrap is to get Chef installed on the target system so it can run Chef Client with a Chef Server. The main assumption is a baseline OS installation exists (provided by the provisioning). It is primarily intended for Chef Client systems that talk to a Chef server.  By default the server is bootstrapped using the chef-full template.  This can be overridden using the <tt>-d</tt> or <tt>--template-file</tt> command options.
 
 == knife cloudstack server delete
 
@@ -83,7 +85,7 @@ Delete a keypair which is abailable to the currently configured Cloudstack Compu
 
 Outputs a list of all available keypairs available to the currently configured Cloudstack Compute cloud account. This information is valuable to provide password recovery options as well as associating a Cloudstack keypair with an instance for any advanced authentication methods when instantiating a server with the <tt>knife cloudstack server create</tt> subcommand.
 
-== knife cloudstack networks list
+== knife cloudstack network list
 
 Outputs a list of all available network offerings available to the currently configured Cloudstack Compute cloud account. This information is necessary to locate a network ID when instantiating a server with the <tt>knife cloudstack server create</tt> subcommand if your Cloudstack Compute cloud requires a server be associated with a particular network offering.
 
@@ -111,10 +113,15 @@ Outputs a list of all available zones available to the currently configured Clou
 
 Outputs a list of all available disk offerings available to the currently configured Cloudstack Compute cloud account. This information is valuable if you are also seeking to provision a data disk alongside your root volume when instantiating a server with the <tt>knife cloudstack server create</tt> subcommand.
 
+== knife cloudstack network create
+
+Creates networks to be used by the knife cloudstack server create command in zones that are configured in Advanced/VPC networking modes.
+
+
 
 = LICENSE:
 
-Author:: Chirag Jog (<chirag@clogeny.com>), Jeff Moody (<jmoody@datapipe.com>), dfuentes77, Takashi Kanai (<anikundesu@gmail.com>)
+Author:: Chirag Jog (<chirag@clogeny.com>), Jeff Moody (<jmoody@datapipe.com>), Damien Fuentes, Takashi Kanai (<anikundesu@gmail.com>)
 Copyright:: Copyright (c) 2011 Clogeny, 2012 Datapipe, 2012 IDC Frontier Inc.
 License:: Apache License, Version 2.0
 

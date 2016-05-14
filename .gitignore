@@ -1,7 +1,9 @@
 *.gem
 *.rbc
+*.lock
 .bundle
 .config
+.idea
 coverage
 InstalledFiles
 lib/bundler/man
@@ -12,6 +14,7 @@ test/tmp
 test/version_tmp
 tmp
 *.old
+._*
 
 # YARD artifacts
 .yardoc

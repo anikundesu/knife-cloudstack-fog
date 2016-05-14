@@ -24,7 +24,7 @@ class Chef
 
       include Knife::CloudstackBase
 
-      banner "knife cloudstack portforwardingrule list (options)"
+      banner "knife cloudstack portforwardingrule list"
 
       def run
         $stdout.sync = true

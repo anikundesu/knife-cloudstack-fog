@@ -80,7 +80,7 @@ class Chef
           puts ui.list(publicip_list, :columns_across, 4)
 
         else
-          puts 'Error. Missing -z option.'
+          puts 'Error. Missing Zone ID (-z).'
         end
 
       end

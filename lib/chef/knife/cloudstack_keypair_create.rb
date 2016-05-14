@@ -24,12 +24,12 @@ class Chef
 
       include Knife::CloudstackBase
 
-      banner "knife cloudstack keypair create (options)"
+      banner "knife cloudstack keypair create -k NAME (options)"
 
       option  :name,
               :short => "-k KEYPAIR",
               :long => "--keypair KEYPAIR",
-              :description => "The Name of Key Pair to create."
+              :description => "The name of the Key Pair to create."
 
       option  :publickey,
               :short => "-p publickey",
@@ -62,7 +62,7 @@ class Chef
 
         case mode
         when 'register'
-          response = connection.register_ssh_key_pair(options)
+          response = connection.register_ssh_key_pair(options['publickey'], options['name'])
           sshkeypair = response['registersshkeypairresponse']['keypair']
 
           sshkeypair_list = [
@@ -92,7 +92,7 @@ class Chef
             puts ui.list(sshkeypair_list, :columns_across, 3)
           end
         else
-          puts 'Error. Missing -k option.'
+          puts 'Error. Missing Keypair Name (-k) option.'
         end
 
       end

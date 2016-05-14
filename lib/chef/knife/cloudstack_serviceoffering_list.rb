@@ -24,8 +24,8 @@ class Chef
 
       include Knife::CloudstackBase
 
-      banner "knife cloudstack serviceoffering list (options)"
-            
+      banner "knife cloudstack serviceoffering list"
+
       def run
         $stdout.sync = true
 
@@ -55,7 +55,7 @@ class Chef
         puts ui.list(serviceoffering_list, :uneven_columns_across, 7)
 
       end
-        
+
     end
   end
 end
