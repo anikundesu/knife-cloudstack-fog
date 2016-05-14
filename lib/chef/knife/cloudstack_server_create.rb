@@ -401,9 +401,20 @@ class Chef
         end
 
         # binding.pry
-        serverdeploy = connection.deploy_virtual_machine(locate_config_value(:cloudstack_serviceid), 
-          locate_config_value(:cloudstack_templateid), locate_config_value(:cloudstack_zoneid), options)
-        
+        if options == {}
+          Chef::Log.debug("options is null\n")
+          serverdeploy = connection.deploy_virtual_machine(locate_config_value(:cloudstack_templateid), 
+            locate_config_value(:cloudstack_zoneid), locate_config_value(:cloudstack_serviceid), options)
+        else
+          Chef::Log.debug("options is not null\n")
+          options["zoneid"] = locate_config_value(:cloudstack_zoneid)
+          options["templateid"] = locate_config_value(:cloudstack_templateid)
+          options["serviceofferingid"] = locate_config_value(:cloudstack_serviceid)
+
+          Chef::Log.debug("Modified Options: #{options} \n")
+          serverdeploy = connection.deploy_virtual_machine(options)
+        end
+              
         jobid = serverdeploy['deployvirtualmachineresponse'].fetch('jobid')
 
         server_start = connection.query_async_job_result(jobid)
